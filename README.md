@@ -6,7 +6,7 @@
 
 ## 🚀 Features
 
-- **College-Exclusive Marketplace**: Listings are tailored for students with relevant filters and categories (Electronics, Books, Furniture, etc.).
+- **College-Exclusive Marketplace**:  Listings are tailored for students with relevant filters and categories (Electronics, Books, Furniture, etc.).
 - **Secure Authentication**: Custom JWT-based authentication system ensuring platform security.
 - **Robust Listing Management**: Create, edit, and manage your listings with direct image uploads.
 - **Admin Dashboard**: Comprehensive admin tools for reviewing, approving, and rejecting pending listings to maintain quality and safety.
