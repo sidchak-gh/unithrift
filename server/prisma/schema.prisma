@@ -1,0 +1,147 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model User {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    password  String
+    name      String
+    image     String?
+    campus    String?  // College or Campus name
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    Listing          Listing[]
+    ownerChats       Chat[]       @relation("OwnerChats")
+    chatUserChats    Chat[]       @relation("ChatUserChats")
+    wishlist         Wishlist[]
+    ratingsReceived  Rating[]     @relation("SellerRatings")
+    ratingsGiven     Rating[]     @relation("ReviewerRatings")
+}
+
+enum Category {
+    electronics
+    books
+    furniture
+    clothing
+    appliances
+    vehicles
+    sports
+    other
+}
+
+enum Condition {
+    new
+    like_new
+    good
+    fair
+    poor
+}
+
+enum Status {
+    pending
+    active
+    rejected
+    sold
+    deleted
+}
+
+model Listing {
+    id                    String    @id @default(uuid())
+    ownerId               String
+    title                 String
+    description           String?
+    category              Category
+    condition             Condition
+    price                 Float
+    status                Status    @default(pending)
+    featured              Boolean   @default(false)
+    images                String[]
+    createdAt             DateTime  @default(now())
+    updatedAt             DateTime  @updatedAt
+
+    // Relations
+    owner        User       @relation(fields: [ownerId], references: [id])
+    chats        Chat[]
+    wishlistedBy Wishlist[]
+}
+
+// User can have multiple chats
+model Chat {
+    id                  String            @id @default(uuid())
+    chatUserId          String
+    ownerUserId         String
+    listingId           String
+    messages            Message[]
+    platformMessages    PlatformMessage[]
+    createdAt           DateTime          @default(now())
+    updatedAt           DateTime          @updatedAt
+    active              Boolean           @default(true)
+    lastMessage         String            @default("")
+    isLastMessageRead   Boolean           @default(true)
+    lastMessageSenderId String            @default("")
+
+    // Relations
+    ownerUser User    @relation("OwnerChats", fields: [ownerUserId], references: [id])
+    chatUser  User    @relation("ChatUserChats", fields: [chatUserId], references: [id])
+    listing   Listing @relation(fields: [listingId], references: [id])
+
+    @@unique([chatUserId, ownerUserId, listingId])
+}
+
+model Message {
+    id        String   @id @default(uuid())
+    chatId    String
+    message   String
+    sender_id String
+    createdAt DateTime @default(now())
+
+    // Relations
+    chat Chat @relation(fields: [chatId], references: [id])
+}
+
+model PlatformMessage {
+    id        String   @id @default(uuid())
+    chatId    String
+    message   String
+    sender_id String   @default("platform")
+    createdAt DateTime @default(now())
+
+    // Relations
+    chat Chat @relation(fields: [chatId], references: [id])
+}
+
+model Wishlist {
+    id        String   @id @default(uuid())
+    userId    String
+    listingId String
+    createdAt DateTime @default(now())
+
+    user    User    @relation(fields: [userId], references: [id])
+    listing Listing @relation(fields: [listingId], references: [id])
+
+    @@unique([userId, listingId])
+}
+
+model Rating {
+    id          String   @id @default(uuid())
+    reviewerId  String
+    sellerId    String
+    rating      Int      // 1 to 5
+    review      String?
+    createdAt   DateTime @default(now())
+
+    reviewer    User     @relation("ReviewerRatings", fields: [reviewerId], references: [id])
+    seller      User     @relation("SellerRatings", fields: [sellerId], references: [id])
+
+    @@unique([reviewerId, sellerId]) // One user can rate another user once
+}
