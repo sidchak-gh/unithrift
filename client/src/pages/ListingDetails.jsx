@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setChat } from "../app/features/chatSlice";
 import {
     ArrowLeftIcon,
     Calendar,
@@ -56,6 +57,7 @@ const StarRating = ({ value, onChange, interactive = false }) => {
 const ListingDetails = () => {
     const { user, token } = useAuthContext();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const currency = import.meta.env.VITE_CURRENCY || "₹";
 
     const [listing, setListing] = useState(null);
@@ -352,6 +354,17 @@ const ListingDetails = () => {
                         <Heart className={`size-5 ${isWishlisted ? "fill-pink-600" : ""}`} />
                         {isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
                     </button>
+
+                    {user && user.id !== listing.ownerId && (
+                        <button
+                            onClick={() => {
+                                dispatch(setChat({ listing: listing }));
+                            }}
+                            className="mt-3 w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition text-sm font-semibold flex items-center justify-center shadow-sm"
+                        >
+                            Message Seller
+                        </button>
+                    )}
 
                     <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 space-y-1">
                         <p className="flex items-center gap-1.5">

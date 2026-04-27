@@ -20,6 +20,9 @@ import { useEffect } from 'react'
 import { useAuthContext } from './context/AuthContext'
 import { getAllPublicListing, getAllUserListing } from './app/features/listingSlice'
 import Footer from './components/Footer'
+import { SocketContextProvider } from './context/SocketContext'
+import Messages from './pages/Messages'
+import ChatBox from './components/ChatBox'
 
 const App = () => {
 
@@ -39,9 +42,12 @@ const App = () => {
 
   return (
     <div className='min-h-screen flex flex-col'>
+      <SocketContextProvider>
       <Toaster />
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
       {!pathname.includes('/admin') && <Navbar />}
+
+      <ChatBox />
 
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -52,6 +58,7 @@ const App = () => {
         <Route path="/listing/:listingId" element={<ListingDetails />} />
         <Route path="/create-listing" element={<ManageListing />} />
         <Route path="/edit-listing/:id" element={<ManageListing />} />
+        <Route path="/messages" element={<Messages />} />
 
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/loading/:nextUrl" element={<Loading />} />
@@ -62,6 +69,7 @@ const App = () => {
       </Routes>
 
       {!pathname.includes('/admin') && <Footer />}
+      </SocketContextProvider>
     </div>
   )
 }
