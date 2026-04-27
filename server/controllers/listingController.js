@@ -1,5 +1,6 @@
 import cloudinary from "../configs/cloudinary.js";
 import prisma from "../configs/prisma.js";
+import { getRecommendations as computeRecommendations } from "../utils/recommender.js";
 
 
 // Helper: upload a file buffer to Cloudinary
@@ -186,6 +187,32 @@ export const markSold = async (req, res) => {
         return res.status(200).json({ message: "Listing marked as Sold!" });
     } catch (error) {
         console.error(error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export const getRecommendations = async (req, res) => {
+    try {
+        const { listingId } = req.params;
+        const limit = parseInt(req.query.limit) || 2;
+
+        // Fetch all active listings with owner info (same as public feed)
+        const allListings = await prisma.listing.findMany({
+            where: { status: "active" },
+            include: { owner: { select: { id: true, name: true, campus: true, image: true } } },
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (allListings.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        // Run TF-IDF cosine similarity engine
+        const recommendations = computeRecommendations(listingId, allListings, limit);
+
+        return res.status(200).json(recommendations);
+    } catch (error) {
+        console.error("Recommendation error:", error);
         return res.status(500).json({ message: error.message });
     }
 };

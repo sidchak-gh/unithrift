@@ -1,5 +1,5 @@
 import express from 'express';
-import { addListing, deleteUserListing, getAllPublicListing, getAllUserListing, updateListing, markSold } from '../controllers/listingController.js';
+import { addListing, deleteUserListing, getAllPublicListing, getAllUserListing, updateListing, markSold, getRecommendations } from '../controllers/listingController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 import upload from '../configs/multer.js';
 
@@ -11,5 +11,6 @@ listingRouter.get('/public', getAllPublicListing);
 listingRouter.get('/user', protect, getAllUserListing);
 listingRouter.delete('/:listingId', protect, deleteUserListing);
 listingRouter.put('/mark-sold/:id', protect, markSold);
+listingRouter.get('/recommendations/:listingId', getRecommendations);
 
 export default listingRouter;
