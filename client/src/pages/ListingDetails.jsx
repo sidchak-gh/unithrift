@@ -13,11 +13,13 @@ import {
     StarIcon,
     UserCircleIcon,
     Package,
+    Sparkles,
 } from "lucide-react";
 import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { backendUrl } from "../configs/axios";
+import ListingCard from "../components/ListingCard";
 
 const CONDITION_LABELS = {
     new: "New",
@@ -70,6 +72,10 @@ const ListingDetails = () => {
     const [myReview, setMyReview] = useState("");
     const [submittingRating, setSubmittingRating] = useState(false);
 
+    // Recommendations state
+    const [recommendations, setRecommendations] = useState([]);
+    const [loadingRecs, setLoadingRecs] = useState(false);
+
     const { listingId } = useParams();
     const { listings } = useSelector((state) => state.listing);
 
@@ -92,6 +98,23 @@ const ListingDetails = () => {
             fetchSellerRatings(found.ownerId);
         }
     }, [listingId, listings]);
+
+    // Fetch TF-IDF recommendations whenever the listing changes
+    useEffect(() => {
+        if (!listingId) return;
+        const fetchRecs = async () => {
+            setLoadingRecs(true);
+            try {
+                const { data } = await axios.get(`${backendUrl}/api/listing/recommendations/${listingId}`);
+                setRecommendations(data);
+            } catch (e) {
+                console.error("Recommendations fetch failed", e);
+            } finally {
+                setLoadingRecs(false);
+            }
+        };
+        fetchRecs();
+    }, [listingId]);
 
     const toggleWishlist = async () => {
         try {
@@ -373,6 +396,31 @@ const ListingDetails = () => {
                         </p>
                     </div>
                 </div>
+            </div>
+
+            {/* ── Recommendations Section ──────────────────────────────── */}
+            <div className="mt-12">
+                <div className="flex items-center gap-2 mb-6">
+                    <Sparkles className="size-5 text-indigo-500" />
+                    <h3 className="text-xl font-bold text-gray-800">You Might Also Like</h3>
+                    <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-medium">AI Powered</span>
+                </div>
+
+                {loadingRecs ? (
+                    <div className="flex justify-center py-10">
+                        <Loader2Icon className="size-7 animate-spin text-indigo-400" />
+                    </div>
+                ) : recommendations.length === 0 ? (
+                    <div className="bg-white rounded-2xl border border-gray-100 py-10 text-center text-gray-400 text-sm">
+                        No similar listings found right now.
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                        {recommendations.map((rec) => (
+                            <ListingCard key={rec.id} listing={rec} />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
