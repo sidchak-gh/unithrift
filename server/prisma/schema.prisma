@@ -10,14 +10,15 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    password  String
-    name      String
-    image     String?
-    campus    String?  // College or Campus name
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id         String   @id @default(uuid())
+    email      String   @unique
+    password   String
+    name       String
+    image      String?
+    campus     String?  // College or Campus name
+    isVerified Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
     // Relations
     Listing          Listing[]
@@ -66,6 +67,8 @@ model Listing {
     status                Status    @default(pending)
     featured              Boolean   @default(false)
     images                String[]
+    aiApproved            Boolean?  // null = not AI-reviewed, true = AI approved, false = AI rejected
+    aiReason              String?   // Gemini's explanation
     createdAt             DateTime  @default(now())
     updatedAt             DateTime  @updatedAt
 
@@ -130,6 +133,17 @@ model Wishlist {
     listing Listing @relation(fields: [listingId], references: [id])
 
     @@unique([userId, listingId])
+}
+
+model OtpVerification {
+    id           String   @id @default(uuid())
+    email        String   @unique
+    otp          String
+    name         String
+    passwordHash String
+    campus       String?
+    expiresAt    DateTime
+    createdAt    DateTime @default(now())
 }
 
 model Rating {

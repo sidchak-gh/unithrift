@@ -49,11 +49,26 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
-    const register = async (name, email, password, campus) => {
-        const { data } = await axios.post(`${backendUrl}/api/auth/register`, { name, email, password, campus });
+    // Step 1 — sends OTP email; does NOT create the user yet
+    const sendOtp = async (name, email, password, campus) => {
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
+            name, email, password, campus,
+        });
+        return data; // { message: "OTP sent..." }
+    };
+
+    // Step 2 — verifies OTP, creates account, logs in
+    const verifyOtp = async (email, otp) => {
+        const { data } = await axios.post(`${backendUrl}/api/auth/verify-otp`, { email, otp });
         localStorage.setItem('token', data.token);
         setToken(data.token);
         setUser(data);
+        return data;
+    };
+
+    // Resend OTP helper
+    const resendOtp = async (email) => {
+        const { data } = await axios.post(`${backendUrl}/api/auth/resend-otp`, { email });
         return data;
     };
 
@@ -67,10 +82,12 @@ export const AuthProvider = ({ children }) => {
         user,
         token,
         login,
-        register,
+        sendOtp,
+        verifyOtp,
+        resendOtp,
         logout,
         loading,
-        isSignedIn: !!user
+        isSignedIn: !!user,
     };
 
     return (
