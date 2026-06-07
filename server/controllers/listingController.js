@@ -1,6 +1,7 @@
 import cloudinary from "../configs/cloudinary.js";
 import prisma from "../configs/prisma.js";
 import { getRecommendations as computeRecommendations } from "../utils/recommender.js";
+import { moderateListing } from "../utils/geminiModerator.js";
 
 
 // Helper: upload a file buffer to Cloudinary
@@ -38,6 +39,20 @@ export const addListing = async (req, res) => {
             );
         }
 
+        // ── Gemini AI Moderation ──────────────────────────────────────────────
+        const aiResult = await moderateListing({
+            title: itemDetails.title,
+            description: itemDetails.description,
+            category: itemDetails.category,
+            imageUrls: images,
+        });
+
+        // aiResult is null if Gemini API failed → fall back to manual review
+        const status = aiResult === null ? "pending" : aiResult.approved ? "active" : "rejected";
+        const aiApproved = aiResult?.approved ?? null;
+        const aiReason = aiResult?.reason ?? null;
+        // ─────────────────────────────────────────────────────────────────────
+
         const listing = await prisma.listing.create({
             data: {
                 ownerId: userId,
@@ -47,13 +62,19 @@ export const addListing = async (req, res) => {
                 category: itemDetails.category,
                 condition: itemDetails.condition,
                 price: itemDetails.price,
-                status: "pending",
+                status,
+                aiApproved,
+                aiReason,
             }
         });
 
+        const message = status === "active"
+            ? "Item listed successfully! It's now live on the marketplace."
+            : status === "rejected"
+            ? `Your listing was not approved. Reason: ${aiReason}`
+            : "Item listed successfully. Awaiting admin approval.";
 
-
-        return res.status(201).json({ message: "Item Listed successfully. Awaiting approval.", listing });
+        return res.status(201).json({ message, listing });
 
     } catch (error) {
         console.error("Add Listing Error:", error);
@@ -121,6 +142,21 @@ export const updateListing = async (req, res) => {
             );
         }
 
+        const updatedImages = [...(itemDetails.images || []), ...newImages];
+
+        // ── Gemini AI Re-Moderation on Edit ───────────────────────────────────
+        const aiResult = await moderateListing({
+            title: itemDetails.title,
+            description: itemDetails.description,
+            category: itemDetails.category,
+            imageUrls: updatedImages,
+        });
+
+        const status = aiResult === null ? "pending" : aiResult.approved ? "active" : "rejected";
+        const aiApproved = aiResult?.approved ?? null;
+        const aiReason = aiResult?.reason ?? null;
+        // ─────────────────────────────────────────────────────────────────────
+
         const listing = await prisma.listing.update({
             where: { id: itemDetails.id },
             data: {
@@ -129,14 +165,20 @@ export const updateListing = async (req, res) => {
                 category: itemDetails.category,
                 condition: itemDetails.condition,
                 price: itemDetails.price,
-                images: [...(itemDetails.images || []), ...newImages],
-                status: "pending"
+                images: updatedImages,
+                status,
+                aiApproved,
+                aiReason,
             }
         });
 
+        const message = status === "active"
+            ? "Listing updated and approved by AI!"
+            : status === "rejected"
+            ? `Listing updated but not approved. Reason: ${aiReason}`
+            : "Listing updated. Awaiting re-approval.";
 
-
-        return res.status(200).json({ message: "Listing updated. Awaiting re-approval.", listing });
+        return res.status(200).json({ message, listing });
 
     } catch (error) {
         console.error(error);
