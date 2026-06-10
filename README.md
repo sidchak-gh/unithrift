@@ -6,12 +6,15 @@
 
 ## 🚀 Features
 
-- **College-Exclusive Marketplace**:  Listings are tailored for students with relevant filters and categories (Electronics, Books, Furniture, etc.).
-- **Secure Authentication**: Custom JWT-based authentication system ensuring platform security.
+- **College-Exclusive Marketplace**: Listings are tailored for students with relevant filters and categories (Electronics, Books, Furniture, etc.).
+- **Secure Authentication**: Custom JWT-based authentication with **OTP email verification** — every new account is verified before activation.
+- **Gemini AI Moderation**: Listings are automatically reviewed by Google Gemini AI on submission. Clean listings go live instantly; inappropriate ones are rejected with a reason shown to the seller.
 - **Robust Listing Management**: Create, edit, and manage your listings with direct image uploads.
-- **Admin Dashboard**: Comprehensive admin tools for reviewing, approving, and rejecting pending listings to maintain quality and safety.
+- **Admin Dashboard**: Comprehensive admin tools for reviewing, approving, and rejecting listings. Admins can provide a rejection reason that is shown directly to the seller. AI-approved listings are marked with a `✦ AI` badge.
 - **Clean UI Aesthetics**: A polished, modern light theme built with TailwindCSS for seamless desktop and mobile use.
 - **Wishlist Support**: Save your favorite campus finds and revisit them easily.
+- **Real-time Chat**: Message sellers directly via Socket.IO powered chat.
+- **Smart Recommendations**: TF-IDF cosine similarity engine for related listing suggestions.
 
 ## 🛠️ Tech Stack
 
@@ -28,6 +31,9 @@
 - Prisma ORM
 - JWT (JSON Web Tokens) & bcrypt
 - Cloudinary & Multer (Image processing)
+- Nodemailer (OTP email delivery)
+- Google Gemini AI (`@google/generative-ai`) — listing moderation
+- Socket.IO (Real-time chat)
 
 ## 📁 Project Structure
 
@@ -39,13 +45,14 @@ unithrift/
 │   ├── src/
 │   │   ├── app/     # Redux store configurations
 │   │   ├── components/ # Reusable UI pieces & Admin modals
-│   │   ├── pages/   # Application routes
+│   │   ├── pages/   # Application routes (Register, Login, MyListings, etc.)
 │   │   └── index.css # Tailwind configurations
 ├── server/          # Node + Express API
-│   ├── controllers/ # API logic
+│   ├── controllers/ # API logic (auth, listings, admin, chat, ratings)
 │   ├── routes/      # Express endpoints
-│   ├── middlewares/ # Auth & validation checks
+│   ├── middlewares/ # Auth & admin role checks
 │   ├── prisma/      # Database schema & migrations
+│   ├── utils/       # Mailer, Gemini moderator, recommender
 │   └── configs/     # App config (db, multer, cloudinary)
 ```
 
@@ -55,6 +62,8 @@ unithrift/
 - Node.js (v18+)
 - PostgreSQL Database URL (Local or via Neon)
 - Cloudinary credentials for media hosting
+- Gmail account + App Password for OTP emails
+- Google Gemini API key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ### 1. Repository Setup
 ```bash
@@ -67,18 +76,22 @@ cd unithrift
 cd server
 npm install
 
-# Create a .env file locally with the following keys:
-# PORT=8000
-# DATABASE_URL="postgresql://user:password@localhost/unithrift?schema=public"
+# Create a .env file with the following keys:
+# DATABASE_URL="postgresql://user:password@host/unithrift"
+# DIRECT_URL="postgresql://user:password@host/unithrift"
 # JWT_SECRET="your_jwt_secret"
 # CLOUDINARY_CLOUD_NAME="..."
 # CLOUDINARY_API_KEY="..."
 # CLOUDINARY_API_SECRET="..."
+# ADMIN_EMAIL="admin@yourdomain.com"
+# EMAIL_USER="your_gmail@gmail.com"
+# EMAIL_PASS="your_16_char_gmail_app_password"
+# GEMINI_API_KEY="your_gemini_api_key"
 
 # Sync the Prisma database schema
 npx prisma db push
 
-# Start the Node/Express server via nodemon
+# Start the server
 npm run server
 ```
 
@@ -87,18 +100,35 @@ npm run server
 cd ../client
 npm install
 
-# Create a .env file locally:
+# Create a .env file:
 # VITE_BACKEND_URL=http://localhost:8000
-# VITE_CURRENCY="₹" (or your local currency)
+# VITE_CURRENCY="₹"
 
 # Start the Vite development server
 npm run dev
 ```
 
-Your app will be running actively at `http://localhost:5173`!
+Your app will be running at `http://localhost:5173`!
+
+---
+
+## 🔐 How OTP Verification Works
+
+1. User fills in the registration form and submits
+2. Server sends a **6-digit OTP** to their email (valid for 10 minutes)
+3. User enters the OTP on the verification screen
+4. On success, the account is created and the user is logged in
+
+## 🤖 How Gemini AI Moderation Works
+
+1. User submits a new listing
+2. Server sends the title, description, category, and images to **Gemini AI**
+3. Gemini decides: `approved` → listing goes live instantly | `rejected` → listing is rejected with a reason
+4. If Gemini API is unavailable, listing falls back to `pending` for manual admin review
+5. In the admin panel, AI-approved listings show a `✦ AI` badge with Gemini's reasoning on hover
 
 ---
 
 ## 👨‍💻 Contributing & Development
 
-Before making a PR, please ensure you test changes across both the `client` and `server`. If modifying database structures in `server/prisma/schema.prisma`, always run `npx prisma db push` (for local development) before restarting the server wrapper. 
+Before making a PR, please ensure you test changes across both the `client` and `server`. If modifying database structures in `server/prisma/schema.prisma`, always run `npx prisma db push` before restarting the server.
