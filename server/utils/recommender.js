@@ -2,10 +2,7 @@ import natural from 'natural';
 
 const TfIdf = natural.TfIdf;
 
-/**
- * Build a TF-IDF document string for a listing.
- * We repeat the category 3× so it carries more weight in similarity.
- */
+
 function buildDocument(listing) {
     const category = (listing.category || '').repeat(3);
     const condition = listing.condition || '';
@@ -14,10 +11,7 @@ function buildDocument(listing) {
     return `${title} ${title} ${description} ${category} ${condition}`;
 }
 
-/**
- * Compute cosine similarity between two sparse TF-IDF vectors.
- * Both are objects: { term: tfidfScore }
- */
+
 function cosineSimilarity(vecA, vecB) {
     let dotProduct = 0;
     let magA = 0;
@@ -37,10 +31,7 @@ function cosineSimilarity(vecA, vecB) {
     return dotProduct / (Math.sqrt(magA) * Math.sqrt(magB));
 }
 
-/**
- * Extract the TF-IDF vector for a specific document index in the tfidf object.
- * Returns: { term: score }
- */
+
 function getVector(tfidf, docIndex) {
     const vector = {};
     tfidf.listTerms(docIndex).forEach(({ term, tfidf: score }) => {
@@ -50,8 +41,6 @@ function getVector(tfidf, docIndex) {
 }
 
 /**
- * Main export: given a target listingId and all active listings,
- * returns top N recommended listings sorted by cosine similarity.
  *
  * @param {string} targetId  - The listing the user is currently viewing
  * @param {Array}  listings  - All active listings from DB (exclude the target inside here)

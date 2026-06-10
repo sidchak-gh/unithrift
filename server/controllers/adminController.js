@@ -66,10 +66,10 @@ export const getPendingListings = async (req, res) => {
 export const changeStatus = async (req, res) => {
     try {
         const { listingId } = req.params;
-        const { status } = req.body; // 'active' or 'rejected'
+        const { status, reason } = req.body; // reason is optional, for rejections
 
-        if(status !== "active" && status !== "rejected"){
-            return res.status(400).json({message: "Invalid status provided"});
+        if (status !== "active" && status !== "rejected") {
+            return res.status(400).json({ message: "Invalid status provided" });
         }
 
         const listing = await prisma.listing.findUnique({
@@ -80,10 +80,14 @@ export const changeStatus = async (req, res) => {
 
         await prisma.listing.update({
             where: { id: listingId },
-            data: { status }
+            data: {
+                status,
+                // When admin rejects: save reason, set aiApproved null (admin = null, gemini = false)
+                // When admin approves: clear any previous rejection reason
+                aiReason: status === "rejected" ? (reason || "Rejected by admin") : null,
+                aiApproved: status === "rejected" ? null : listing.aiApproved,
+            }
         });
-
-
 
         return res.status(200).json({ message: "Listing status updated successfully" });
 

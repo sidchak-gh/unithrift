@@ -171,6 +171,20 @@ const MyListing = () => {
                                         </span>
                                     </div>
 
+                                    {/* Rejection reason — shown for both Gemini and Admin rejections */}
+                                    {listing.status === "rejected" && listing.aiReason && (
+                                        <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-3">
+                                            <span className="text-red-500 text-xs mt-0.5 shrink-0">
+                                                {listing.aiApproved === false ? '✦' : '👤'}
+                                            </span>
+                                            <p className="text-xs text-red-600 leading-relaxed">
+                                                <span className="font-semibold">
+                                                    {listing.aiApproved === false ? 'Gemini: ' : 'Admin: '}
+                                                </span>
+                                                {listing.aiReason}
+                                            </p>
+                                        </div>
+                                    )}
                                     {/* Actions */}
                                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                                         {listing.status === "active" && (

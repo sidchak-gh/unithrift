@@ -27,7 +27,7 @@ app.get("/health", (req, res) => {
     res.send("UniThrift API is running...");
 });
 
-// Removed Inngest endpoint
+
 
 app.use("/api/auth", authRouter);
 app.use("/api/listing", listingRouter);
@@ -36,21 +36,21 @@ app.use("/api/wishlist", wishlistRouter);
 app.use("/api/rating", ratingRouter);
 app.use("/api/chat", chatRouter);
 
-// Socket Logic
+
 const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-    // Add user to online users map
+    
     socket.on("add-user", (userId) => {
         onlineUsers.set(userId, socket.id);
     });
 
-    // Handle incoming messages
+   
     socket.on("send-message", async (data) => {
         try {
             const { chatId, senderId, receiverId, message } = data;
             
-            // Save message to DB
+            
             const savedMessage = await prisma.message.create({
                 data: {
                     chatId,
@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
                 }
             });
 
-            // Update chat last message metrics
+            
             await prisma.chat.update({
                 where: { id: chatId },
                 data: {
@@ -69,7 +69,7 @@ io.on("connection", (socket) => {
                 }
             });
 
-            // If receiver is online, emit exactly to them
+            
             const receiverSocket = onlineUsers.get(receiverId);
             if (receiverSocket) {
                 socket.to(receiverSocket).emit("receive-message", savedMessage);
