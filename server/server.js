@@ -14,13 +14,18 @@ import chatRouter from "./routes/chatRoutes.js";
 
 const app = express();
 const server = createServer(app);
+
+const allowedOrigins = process.env.CLIENT_URL
+    ? [process.env.CLIENT_URL, "http://localhost:5173"]
+    : ["http://localhost:5173"];
+
 const io = new Server(server, {
-    cors: { origin: "*" }
+    cors: { origin: allowedOrigins, credentials: true }
 });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 
 app.get("/health", (req, res) => {
