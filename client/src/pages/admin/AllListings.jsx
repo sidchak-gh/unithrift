@@ -96,7 +96,6 @@ const AiBadge = ({ reason }) => {
                     fontSize: '11px',
                     padding: '6px 10px',
                     borderRadius: '7px',
-                    whiteSpace: 'nowrap',
                     maxWidth: '220px',
                     whiteSpace: 'normal',
                     lineHeight: '1.4',
