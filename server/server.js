@@ -1,5 +1,6 @@
 import express from "express";
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -45,17 +46,17 @@ app.use("/api/chat", chatRouter);
 const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-    
+
     socket.on("add-user", (userId) => {
         onlineUsers.set(userId, socket.id);
     });
 
-   
+
     socket.on("send-message", async (data) => {
         try {
             const { chatId, senderId, receiverId, message } = data;
-            
-            
+
+
             const savedMessage = await prisma.message.create({
                 data: {
                     chatId,
@@ -64,7 +65,7 @@ io.on("connection", (socket) => {
                 }
             });
 
-            
+
             await prisma.chat.update({
                 where: { id: chatId },
                 data: {
@@ -74,7 +75,7 @@ io.on("connection", (socket) => {
                 }
             });
 
-            
+
             const receiverSocket = onlineUsers.get(receiverId);
             if (receiverSocket) {
                 socket.to(receiverSocket).emit("receive-message", savedMessage);

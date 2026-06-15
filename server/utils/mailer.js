@@ -1,14 +1,33 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Gmail App Password (16 chars)
-  },
-});
+// Lazy transporter creation to avoid initializing with bad/default values if not needed
+const getTransporter = () => {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS, // Gmail App Password (16 chars)
+    },
+  });
+};
+
+const printOtpConsole = (to, otp) => {
+  console.log("\n==================================================");
+  console.log("📧  [MAILER] MOCK EMAIL SENT");
+  console.log(`👉  Recipient: ${to}`);
+  console.log(`🔑  OTP Code:  ${otp}`);
+  console.log("==================================================\n");
+};
 
 export const sendOtpEmail = async (to, otp, name) => {
+  const isPlaceholder = !process.env.EMAIL_PASS || process.env.EMAIL_PASS === "your_16_char_app_password";
+
+  if (isPlaceholder) {
+    console.warn("⚠️  [MAILER] Using mock email mode because EMAIL_PASS in server/.env is not configured.");
+    printOtpConsole(to, otp);
+    return;
+  }
+
   const mailOptions = {
     from: `"UniThrift" <${process.env.EMAIL_USER}>`,
     to,
@@ -38,5 +57,12 @@ export const sendOtpEmail = async (to, otp, name) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const transporter = getTransporter();
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("❌  [MAILER] Failed to send email via SMTP:", error.message);
+    console.warn("⚠️  [MAILER] Falling back to console OTP logging so registration can proceed.");
+    printOtpConsole(to, otp);
+  }
 };
