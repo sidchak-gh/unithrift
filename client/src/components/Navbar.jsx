@@ -54,7 +54,7 @@ const Navbar = () => {
         <div>
             {/* Notice Tape */}
             <div className="ut-notice-tape">
-                ✦ College-exclusive marketplace · Verified student listings only · Gemini AI moderated
+                ✦ College-exclusive marketplace · Buy & sell verified second-hand college essentials
             </div>
 
             {/* Nav */}
