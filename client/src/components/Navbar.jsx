@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { BoxIcon, GripIcon, ListIcon, MenuIcon, MessageCircleMoreIcon, UserLockIcon, XIcon, LogOutIcon, HeartIcon } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import { backendUrl } from '../configs/axios';
@@ -49,97 +48,246 @@ const Navbar = () => {
         setProfileOpen(false);
     };
 
+    const initials = user?.name ? user.name.slice(0, 2).toUpperCase() : 'U';
+
     return (
-        <nav className='h-20'>
-            <div className='fixed left-0 top-0 right-0 z-50 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm transition-all shadow-sm'>
+        <div>
+            {/* Notice Tape */}
+            <div className="ut-notice-tape">
+                ✦ College-exclusive marketplace · Verified student listings only · Gemini AI moderated
+            </div>
 
+            {/* Nav */}
+            <nav className="ut-nav">
                 {/* Logo */}
-                <span
+                <div
+                    className="ut-logo"
                     onClick={() => { navigate('/'); window.scrollTo(0, 0); }}
-                    className='text-2xl font-bold text-indigo-600 cursor-pointer tracking-tight'
                 >
-                    Uni<span className='text-gray-800'>Thrift</span>
-                </span>
-
-                {/* Desktop Nav */}
-                <div className='hidden sm:flex items-center gap-6 md:gap-8 text-sm font-medium text-gray-600'>
-                    <Link to="/" onClick={() => window.scrollTo(0, 0)} className='hover:text-indigo-600 transition'>Home</Link>
-                    <Link to="/marketplace" onClick={() => window.scrollTo(0, 0)} className='hover:text-indigo-600 transition'>Marketplace</Link>
-                    {user && <Link to="/messages" onClick={() => window.scrollTo(0, 0)} className='hover:text-indigo-600 transition'>Messages</Link>}
-                    {user && <Link to="/my-listings" onClick={() => window.scrollTo(0, 0)} className='hover:text-indigo-600 transition'>My Listings</Link>}
+                    Uni<span>Thrift</span>
                 </div>
 
-                {/* Right side */}
+                {/* Desktop Links */}
+                <div className="hidden sm:flex items-center gap-1">
+                    <Link to="/" onClick={() => window.scrollTo(0, 0)} className="ut-nav-pill">
+                        Home
+                    </Link>
+                    <Link to="/marketplace" onClick={() => window.scrollTo(0, 0)} className="ut-nav-pill">
+                        Marketplace
+                    </Link>
+                    {user && (
+                        <Link to="/messages" onClick={() => window.scrollTo(0, 0)} className="ut-nav-pill">
+                            <i className="ti ti-message-circle" aria-hidden="true" />
+                            Chats
+                        </Link>
+                    )}
+                    {user && (
+                        <Link to="/wishlist" onClick={() => window.scrollTo(0, 0)} className="ut-nav-pill">
+                            <i className="ti ti-heart" aria-hidden="true" />
+                            Wishlist
+                        </Link>
+                    )}
+                </div>
+
+                {/* Right Side */}
                 {!user ? (
-                    <div className='flex items-center gap-3'>
-                        <Link to="/login" className='max-sm:hidden text-sm font-medium text-gray-600 hover:text-indigo-600 transition'>Log in</Link>
-                        <Link to="/register" className='max-sm:hidden cursor-pointer px-5 py-2 bg-indigo-600 hover:bg-indigo-700 transition text-white rounded-full text-sm font-medium'>Sign up</Link>
-                        <MenuIcon onClick={() => setMenuOpen(true)} className='sm:hidden cursor-pointer size-6 text-gray-700' />
+                    <div className="flex items-center gap-2">
+                        <Link to="/login" className="ut-nav-pill max-sm:hidden">Log in</Link>
+                        <Link to="/register" className="ut-nav-pill primary max-sm:hidden">
+                            <i className="ti ti-user" aria-hidden="true" />
+                            Sign up
+                        </Link>
+                        {/* Mobile hamburger */}
+                        <button
+                            onClick={() => setMenuOpen(true)}
+                            className="sm:hidden ut-nav-pill"
+                            aria-label="Open menu"
+                        >
+                            <i className="ti ti-menu-2" aria-hidden="true" />
+                        </button>
                     </div>
                 ) : (
-                    <div className="relative" ref={dropdownRef}>
-                        <button
-                            onClick={() => setProfileOpen(!profileOpen)}
-                            className="cursor-pointer size-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border-2 border-indigo-200 hover:border-indigo-400 transition text-sm"
-                        >
-                            {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                    <div className="flex items-center gap-2">
+                        {/* Sell button */}
+                        <Link to="/create-listing" className="ut-nav-pill hidden sm:flex">
+                            <i className="ti ti-plus" aria-hidden="true" />
+                            Sell
+                        </Link>
+
+                        {/* Avatar + dropdown */}
+                        <div className="relative" ref={dropdownRef}>
+                            <button
+                                onClick={() => setProfileOpen(!profileOpen)}
+                                style={{
+                                    width: 36, height: 36, borderRadius: '50%',
+                                    background: 'var(--navy)', color: '#F8F7F4',
+                                    fontFamily: "'Space Grotesk', sans-serif",
+                                    fontWeight: 700, fontSize: 13,
+                                    border: '2px solid var(--border-strong)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer', transition: 'border-color 0.12s',
+                                }}
+                                aria-label="Profile menu"
+                            >
+                                {initials}
+                            </button>
+
+                            {profileOpen && (
+                                <div style={{
+                                    position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+                                    width: 220, background: 'var(--surface-2)',
+                                    border: '0.5px solid var(--border-strong)',
+                                    borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                                    zIndex: 100, overflow: 'hidden',
+                                }}>
+                                    {/* User info */}
+                                    <div style={{ padding: '14px 16px', borderBottom: '0.5px solid var(--border)' }}>
+                                        <p style={{ fontWeight: 600, fontSize: 13, color: 'var(--text-primary)', marginBottom: 2, fontFamily: "'Space Grotesk', sans-serif" }}>
+                                            {user.name}
+                                        </p>
+                                        <p style={{ fontSize: 12, color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {user.email}
+                                        </p>
+                                        {user.campus && (
+                                            <p style={{ fontSize: 11, color: 'var(--orange)', marginTop: 2 }}>
+                                                📍 {user.campus}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {[
+                                        { to: '/marketplace', icon: 'ti-layout-grid', label: 'Marketplace' },
+                                        { to: '/messages', icon: 'ti-message-circle', label: 'Messages' },
+                                        { to: '/my-listings', icon: 'ti-list', label: 'My Listings' },
+                                        { to: '/wishlist', icon: 'ti-heart', label: 'Wishlist' },
+                                        { to: '/create-listing', icon: 'ti-plus', label: 'Sell an Item' },
+                                    ].map(({ to, icon, label }) => (
+                                        <button
+                                            key={to}
+                                            onClick={() => { navigate(to); setProfileOpen(false); window.scrollTo(0, 0); }}
+                                            style={{
+                                                width: '100%', textAlign: 'left', padding: '9px 16px',
+                                                fontSize: 13, color: 'var(--text-secondary)',
+                                                background: 'none', border: 'none', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', gap: 8,
+                                                transition: 'background 0.1s',
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-1)'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                                        >
+                                            <i className={`ti ${icon}`} style={{ fontSize: 14, color: 'var(--orange)' }} />
+                                            {label}
+                                        </button>
+                                    ))}
+
+                                    {isAdmin && (
+                                        <button
+                                            onClick={() => { navigate('/admin'); setProfileOpen(false); window.scrollTo(0, 0); }}
+                                            style={{
+                                                width: '100%', textAlign: 'left', padding: '9px 16px',
+                                                fontSize: 13, color: 'var(--text-secondary)',
+                                                background: 'none', border: 'none', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', gap: 8,
+                                                transition: 'background 0.1s',
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = 'var(--surface-1)'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                                        >
+                                            <i className="ti ti-lock" style={{ fontSize: 14, color: 'var(--orange)' }} />
+                                            Admin Panel
+                                        </button>
+                                    )}
+
+                                    <div style={{ borderTop: '0.5px solid var(--border)', marginTop: 4 }}>
+                                        <button
+                                            onClick={handleLogout}
+                                            style={{
+                                                width: '100%', textAlign: 'left', padding: '9px 16px',
+                                                fontSize: 13, color: '#dc2626',
+                                                background: 'none', border: 'none', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', gap: 8,
+                                                transition: 'background 0.1s',
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                                        >
+                                            <i className="ti ti-logout" style={{ fontSize: 14, color: '#dc2626' }} />
+                                            Sign out
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mobile hamburger */}
+                        <button onClick={() => setMenuOpen(true)} className="sm:hidden ut-nav-pill" aria-label="Open menu">
+                            <i className="ti ti-menu-2" aria-hidden="true" />
                         </button>
-
-                        {profileOpen && (
-                            <div className="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                                <div className="px-4 py-3 border-b border-gray-100">
-                                    <p className="font-semibold text-gray-800 text-sm truncate">{user.name}</p>
-                                    <p className="text-gray-400 text-xs truncate">{user.email}</p>
-                                    {user.campus && <p className="text-indigo-500 text-xs mt-0.5 truncate">📍 {user.campus}</p>}
-                                </div>
-
-                                <button onClick={() => { navigate('/marketplace'); setProfileOpen(false); window.scrollTo(0, 0); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 transition">
-                                    <GripIcon size={15} className="text-blue-500" /> Marketplace
-                                </button>
-                                <button onClick={() => { navigate('/messages'); setProfileOpen(false); window.scrollTo(0, 0); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 transition">
-                                    <MessageCircleMoreIcon size={15} className="text-indigo-500" /> Messages
-                                </button>
-                                <button onClick={() => { navigate('/my-listings'); setProfileOpen(false); window.scrollTo(0, 0); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 transition">
-                                    <ListIcon size={15} className="text-purple-500" /> My Listings
-                                </button>
-                                <button onClick={() => { navigate('/wishlist'); setProfileOpen(false); window.scrollTo(0, 0); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 transition">
-                                    <HeartIcon size={15} className="text-pink-500" /> Wishlist
-                                </button>
-                                {isAdmin && (
-                                    <button onClick={() => { navigate('/admin'); setProfileOpen(false); window.scrollTo(0, 0); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 flex items-center gap-2 transition">
-                                        <UserLockIcon size={15} className="text-cyan-500" /> Admin Panel
-                                    </button>
-                                )}
-
-                                <div className="border-t border-gray-100 mt-1 pt-1">
-                                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition">
-                                        <LogOutIcon size={15} className="text-red-400" /> Sign out
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
-            </div>
+            </nav>
 
-            {/* Mobile Menu */}
-            <div className={`sm:hidden fixed inset-0 ${menuOpen ? 'w-full' : 'w-0'} overflow-hidden bg-white z-[200] text-sm transition-all duration-300`}>
-                <div className='flex flex-col items-center justify-center h-full text-lg font-semibold gap-7 p-6'>
-                    <span className='text-2xl font-bold text-indigo-600 mb-4'>UniThrift</span>
-                    <Link to="/" onClick={() => setMenuOpen(false)} className='hover:text-indigo-600 transition'>Home</Link>
-                    <Link to="/marketplace" onClick={() => setMenuOpen(false)} className='hover:text-indigo-600 transition'>Marketplace</Link>
-                    {user && <Link to="/messages" onClick={() => setMenuOpen(false)} className='hover:text-indigo-600 transition'>Messages</Link>}
-                    {user && <Link to="/my-listings" onClick={() => setMenuOpen(false)} className='hover:text-indigo-600 transition'>My Listings</Link>}
-                    {user && <Link to="/wishlist" onClick={() => setMenuOpen(false)} className='hover:text-indigo-600 transition'>Wishlist</Link>}
+            {/* Mobile Full-screen Menu */}
+            <div
+                className={`sm:hidden fixed inset-0 ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-opacity duration-200`}
+                style={{ background: 'var(--surface-2)', zIndex: 200 }}
+            >
+                <div className="flex flex-col items-center justify-center h-full gap-6 p-6 relative">
+                    <div className="ut-logo text-2xl mb-2">Uni<span>Thrift</span></div>
+
+                    {[
+                        { to: '/', label: 'Home' },
+                        { to: '/marketplace', label: 'Marketplace' },
+                        ...(user ? [
+                            { to: '/messages', label: 'Messages' },
+                            { to: '/my-listings', label: 'My Listings' },
+                            { to: '/wishlist', label: 'Wishlist' },
+                            { to: '/create-listing', label: 'Sell an Item' },
+                        ] : []),
+                    ].map(({ to, label }) => (
+                        <Link
+                            key={to}
+                            to={to}
+                            onClick={() => setMenuOpen(false)}
+                            style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            {label}
+                        </Link>
+                    ))}
+
                     {!user ? (
-                        <Link to="/login" onClick={() => setMenuOpen(false)} className='px-8 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-base font-medium transition'>Log in</Link>
+                        <Link
+                            to="/login"
+                            onClick={() => setMenuOpen(false)}
+                            className="ut-nav-pill primary"
+                            style={{ fontSize: 15, padding: '10px 32px' }}
+                        >
+                            Log in
+                        </Link>
                     ) : (
-                        <button onClick={handleLogout} className='px-8 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-full font-medium transition'>Sign Out</button>
+                        <button
+                            onClick={handleLogout}
+                            className="ut-nav-pill danger"
+                            style={{ fontSize: 15, padding: '10px 32px' }}
+                        >
+                            Sign Out
+                        </button>
                     )}
-                    <XIcon onClick={() => setMenuOpen(false)} className='absolute size-7 right-5 top-5 text-gray-500 hover:text-gray-700 cursor-pointer' />
+
+                    <button
+                        onClick={() => setMenuOpen(false)}
+                        style={{
+                            position: 'absolute', top: 20, right: 20,
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            fontSize: 24, color: 'var(--text-muted)',
+                        }}
+                        aria-label="Close menu"
+                    >
+                        <i className="ti ti-x" aria-hidden="true" />
+                    </button>
                 </div>
             </div>
-        </nav>
+        </div>
     )
 }
 

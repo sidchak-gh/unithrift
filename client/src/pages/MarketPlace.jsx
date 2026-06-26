@@ -46,35 +46,48 @@ const MarketPlace = () => {
     });
 
     return (
-        <div className="px-6 md:px-16 lg:px-24 xl:px-32 min-h-screen bg-slate-50">
+        <div style={{ padding: '0 28px', minHeight: '100vh', background: 'var(--surface-0)', maxWidth: 1100, margin: '0 auto' }}>
             {/* Top Bar */}
-            <div className="flex items-center justify-between py-5 text-slate-500">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 0' }}>
                 <button
-                    onClick={() => { navigate("/"); scrollTo(0, 0); }}
-                    className="flex items-center gap-2 hover:text-indigo-600 transition text-sm"
+                    onClick={() => { navigate("/"); window.scrollTo(0, 0); }}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        color: 'var(--text-secondary)', background: 'none', border: 'none',
+                        cursor: 'pointer', fontSize: 13, fontWeight: 500,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'var(--orange)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                     <ArrowLeftIcon className="size-4" />
                     Back to Home
                 </button>
 
-                <div className="flex items-center gap-3">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     {search && (
-                        <span className="text-sm text-gray-700">
-                            Results for <span className="font-semibold text-indigo-600">"{search}"</span>
+                        <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                            Results for{' '}
+                            <span style={{ fontWeight: 600, color: 'var(--orange)' }}>"{search}"</span>
                         </span>
                     )}
                     <button
                         onClick={() => setShowFilterPhone(true)}
-                        className="flex items-center gap-2 sm:hidden bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm shadow-sm"
+                        className="sm:hidden"
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: 6,
+                            background: 'var(--surface-2)', border: '0.5px solid var(--border-strong)',
+                            borderRadius: 8, padding: '7px 12px', fontSize: 13,
+                            color: 'var(--text-secondary)', cursor: 'pointer',
+                        }}
                     >
-                        <FilterIcon className="size-4 text-indigo-600" />
+                        <FilterIcon className="size-4" style={{ color: 'var(--orange)' }} />
                         Filters
                     </button>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="relative flex items-start gap-6 pb-12">
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, paddingBottom: 48 }}>
                 <FilterSidebar
                     setFilters={setFilters}
                     filters={filters}
@@ -83,23 +96,24 @@ const MarketPlace = () => {
                 />
 
                 {/* Listings Grid */}
-                <div className="flex-1">
-                    <div className="flex items-center justify-between mb-4">
-                        <p className="text-sm text-gray-500">
-                            <span className="font-semibold text-gray-800">{filteredListings.length}</span> item{filteredListings.length !== 1 ? "s" : ""} found
+                <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                        <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                            <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{filteredListings.length}</span>
+                            {' '}{filteredListings.length !== 1 ? 'items' : 'item'} found
                         </p>
                     </div>
 
                     {filteredListings.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <PackageOpenIcon className="size-16 text-gray-300 mb-4" />
-                            <h3 className="text-xl font-semibold text-gray-700 mb-2">No items found</h3>
-                            <p className="text-gray-500 text-sm max-w-xs">
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 0', textAlign: 'center' }}>
+                            <PackageOpenIcon style={{ width: 56, height: 56, color: 'var(--text-muted)', marginBottom: 16, opacity: 0.4 }} />
+                            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8, fontFamily: "'Space Grotesk', sans-serif" }}>No items found</h3>
+                            <p style={{ fontSize: 13, color: 'var(--text-muted)', maxWidth: 280 }}>
                                 Try adjusting your filters or search term to find what you're looking for.
                             </p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <div className="ut-grid">
                             {filteredListings
                                 .sort((a, b) => (a.featured ? -1 : b.featured ? 1 : 0))
                                 .map((listing, index) => (

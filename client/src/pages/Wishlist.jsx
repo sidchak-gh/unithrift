@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Loader2Icon, HeartCrack } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import axios from "axios";
 import { backendUrl } from "../configs/axios";
 import { useAuthContext } from "../context/AuthContext";
@@ -13,7 +13,6 @@ const Wishlist = () => {
 
     const fetchWishlist = async () => {
         try {
-
             const { data } = await axios.get(`${backendUrl}/api/wishlist`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -32,30 +31,45 @@ const Wishlist = () => {
 
     if (loading) {
         return (
-            <div className="h-screen flex justify-center items-center">
-                <Loader2Icon className="size-7 animate-spin text-indigo-600" />
+            <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--surface-0)' }}>
+                <Loader2Icon style={{ width: 28, height: 28, animation: 'spin 1s linear infinite', color: 'var(--orange)' }} />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen py-10 px-6 md:px-16 lg:px-24">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6 py-2 border-b border-gray-200">
-                My Wishlist
-            </h1>
+        <div style={{ minHeight: '100vh', padding: '32px 28px 48px', maxWidth: 960, margin: '0 auto', background: 'var(--surface-0)' }}>
+            {/* Header */}
+            <div style={{ marginBottom: 28 }}>
+                <div style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: 28, fontWeight: 700,
+                    color: 'var(--text-primary)', letterSpacing: '-0.5px',
+                    marginBottom: 6,
+                }}>
+                    My Wishlist
+                </div>
+                <div style={{ height: '0.5px', background: 'var(--border-strong)', marginTop: 16 }} />
+            </div>
 
             {wishlist.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-[50vh] text-center">
-                    <HeartCrack className="size-16 text-gray-300 mb-4" />
-                    <h2 className="text-xl font-medium text-gray-500">
+                <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    justifyContent: 'center', minHeight: '40vh', textAlign: 'center',
+                }}>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>🤍</div>
+                    <h2 style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8,
+                    }}>
                         Your wishlist is empty
                     </h2>
-                    <p className="text-gray-400 mt-2">
+                    <p style={{ fontSize: 14, color: 'var(--text-muted)', maxWidth: 280 }}>
                         Browse the marketplace and save items you're interested in!
                     </p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="ut-grid">
                     {wishlist.map((item) => (
                         <ListingCard key={item.id} listing={item} />
                     ))}

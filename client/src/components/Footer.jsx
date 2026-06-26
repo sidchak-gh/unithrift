@@ -1,51 +1,95 @@
 import React from 'react'
-
-import { Github, Mail, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { Mail, Github } from 'lucide-react'
 
 const Footer = () => {
-
-
     return (
         <>
-            <hr className='border-t border-gray-200 mt-8' />
-            <footer className="px-6 md:px-16 lg:px-24 xl:px-32 w-full text-sm text-slate-500 bg-white pt-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-14">
+            <div className="ut-divider" />
+            <footer style={{
+                padding: '0 28px 0',
+                maxWidth: 960,
+                margin: '0 auto',
+                paddingBottom: 32,
+                fontSize: 13,
+                color: 'var(--text-muted)',
+            }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }} className="max-sm:grid-cols-1">
 
                     {/* Brand */}
-                    <div className="sm:col-span-2 lg:col-span-1">
-                        <Link to="/">
-                            <span className='text-2xl font-bold text-indigo-600'>Uni<span className="text-gray-800">Thrift</span></span>
+                    <div>
+                        <Link to="/" style={{ textDecoration: 'none' }}>
+                            <div className="ut-logo" style={{ fontSize: 20 }}>
+                                Uni<span>Thrift</span>
+                            </div>
                         </Link>
-                        <p className="text-sm leading-7 mt-4 max-w-xs">
+                        <p style={{ marginTop: 12, lineHeight: 1.7, maxWidth: 280, fontSize: 13, color: 'var(--text-secondary)' }}>
                             UniThrift is a college-only marketplace for buying and selling second-hand items safely within your campus community.
                         </p>
-                        <div className="flex gap-3 mt-4">
-                            <a href="mailto:support@unithrift.com" className="p-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-indigo-500 hover:bg-indigo-600 hover:text-white transition" title="Email">
-                                <Mail size={18} />
+                        <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+                            <a
+                                href="mailto:support@unithrift.com"
+                                title="Email"
+                                style={{
+                                    padding: 7, borderRadius: '50%',
+                                    border: '0.5px solid var(--border-strong)',
+                                    color: 'var(--text-muted)', display: 'flex',
+                                    transition: 'all 0.12s', textDecoration: 'none',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--orange)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--orange)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+                            >
+                                <Mail size={16} />
                             </a>
-                            <a href="#" className="p-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-gray-900 hover:bg-gray-900 hover:text-white transition" title="GitHub">
-                                <Github size={18} />
+                            <a
+                                href="#"
+                                title="GitHub"
+                                style={{
+                                    padding: 7, borderRadius: '50%',
+                                    border: '0.5px solid var(--border-strong)',
+                                    color: 'var(--text-muted)', display: 'flex',
+                                    transition: 'all 0.12s', textDecoration: 'none',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--navy)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--navy)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
+                            >
+                                <Github size={16} />
                             </a>
                         </div>
                     </div>
 
                     {/* Links */}
-                    <div className="flex flex-col">
-                        <h2 className="font-semibold mb-5 text-gray-800">Quick Links</h2>
-                        <div className="flex flex-col space-y-2.5">
-                            <Link to="/" className="hover:text-indigo-600 transition">Home</Link>
-                            <Link to="/marketplace" className="hover:text-indigo-600 transition">Marketplace</Link>
-                            <Link to="/my-listings" className="hover:text-indigo-600 transition">My Listings</Link>
-                            <Link to="/wishlist" className="hover:text-indigo-600 transition">Wishlist</Link>
-                            <Link to="/create-listing" className="hover:text-indigo-600 transition">Sell an Item</Link>
+                    <div>
+                        <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 14, color: 'var(--text-primary)', marginBottom: 16 }}>
+                            Quick Links
+                        </h2>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            {[
+                                { to: '/', label: 'Home' },
+                                { to: '/marketplace', label: 'Marketplace' },
+                                { to: '/my-listings', label: 'My Listings' },
+                                { to: '/wishlist', label: 'Wishlist' },
+                                { to: '/create-listing', label: 'Sell an Item' },
+                            ].map(({ to, label }) => (
+                                <Link
+                                    key={to}
+                                    to={to}
+                                    style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: 13, transition: 'color 0.12s' }}
+                                    onMouseEnter={e => e.currentTarget.style.color = 'var(--orange)'}
+                                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                >
+                                    {label}
+                                </Link>
+                            ))}
                         </div>
                     </div>
-
-
                 </div>
 
-                <p className="py-5 text-center border-t mt-8 border-slate-200 text-xs text-gray-400">
+                <p style={{
+                    paddingTop: 20, marginTop: 24,
+                    borderTop: '0.5px solid var(--border)',
+                    textAlign: 'center', fontSize: 12, color: 'var(--text-muted)',
+                }}>
                     © {new Date().getFullYear()} UniThrift — Built for students, by students.
                 </p>
             </footer>

@@ -40,8 +40,8 @@ const App = () => {
     }
   }, [isSignedIn, token])
 
-  return (
-    <div className='min-h-screen flex flex-col'>
+    return (
+    <div className='min-h-screen flex flex-col' style={{ background: 'var(--surface-0)' }}>
       <SocketContextProvider>
       <Toaster />
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />

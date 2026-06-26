@@ -1,53 +1,125 @@
 import React, { useEffect, useState } from 'react'
-import Title from './Title'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import ListingCard from './ListingCard'
 import Loading from '../pages/Loading'
 
+const CATEGORIES = [
+    { key: 'all', label: 'All', icon: 'ti-layout-grid' },
+    { key: 'electronics', label: 'Electronics', icon: 'ti-device-laptop' },
+    { key: 'books', label: 'Books', icon: 'ti-book' },
+    { key: 'furniture', label: 'Furniture', icon: 'ti-armchair' },
+    { key: 'clothing', label: 'Clothing', icon: 'ti-shirt' },
+    { key: 'vehicles', label: 'Vehicles', icon: 'ti-bicycle' },
+    { key: 'other', label: 'Other', icon: 'ti-dots' },
+]
+
 const LatestListing = () => {
-  const { listings } = useSelector(state => state.listing)
-  const [isLoading, setIsLoading] = useState(true)
+    const { listings } = useSelector(state => state.listing)
+    const [isLoading, setIsLoading] = useState(true)
+    const [activeCategory, setActiveCategory] = useState('all')
+    const navigate = useNavigate()
 
-  // ✅ stop loading when listings are available
-  useEffect(() => {
-    if (listings && listings.length >= 0) {
-      setIsLoading(false)
-    }
-  }, [listings])
-
-  return (
-    <div className="mt-20 mb-8">
-      <Title
-        title="Latest Listings"
-        description="Browse recently listed secondhand items from students on your campus."
-      />
-
-      <div className="flex flex-col gap-6 px-6">
-        {/* ✅ Loading */}
-        {isLoading && (
-          <div className="flex justify-center py-10">
-            <Loading />
-          </div>
-        )}
-
-        {/* ✅ No listings */}
-        {!isLoading && listings.length === 0 && (
-          <div className="text-center text-slate-500 py-10">
-            No listings available
-          </div>
-        )}
-
-        {/* ✅ Listings */}
-        {!isLoading &&
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 px-6 md:px-16 lg:px-24 xl:px-32">
-            {listings.slice(0, 8).map((listing, index) => (
-              <ListingCard listing={listing} key={index} />
-            ))}
-          </div>
+    useEffect(() => {
+        if (listings && listings.length >= 0) {
+            setIsLoading(false)
         }
-      </div>
-    </div>
-  )
+    }, [listings])
+
+    const filtered = activeCategory === 'all'
+        ? listings
+        : listings.filter(l => l.category?.toLowerCase() === activeCategory)
+
+    const totalListings = listings.length
+    const uniqueCampuses = new Set(listings.map(l => l.owner?.campus).filter(Boolean)).size
+    const totalValue = listings.reduce((sum, l) => sum + (l.price || 0), 0)
+    const formatValue = (v) => {
+        if (v >= 100000) return `${(v / 100000).toFixed(1)}L+`
+        if (v >= 1000) return `${(v / 1000).toFixed(0)}k+`
+        return v.toLocaleString()
+    }
+
+    return (
+        <div style={{ background: 'var(--surface-0)' }}>
+
+            {/* Category Strip */}
+            <div className="ut-strip">
+                <div className="ut-strip-inner">
+                    {CATEGORIES.map(cat => (
+                        <button
+                            key={cat.key}
+                            className={`ut-cat ${activeCategory === cat.key ? 'active' : ''}`}
+                            onClick={() => setActiveCategory(cat.key)}
+                        >
+                            <i className={`ti ${cat.icon}`} aria-hidden="true" />
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Section */}
+            <div className="ut-section">
+                {/* Stats Bar */}
+                <div className="ut-stat-bar">
+                    <div className="ut-stat">
+                        <div className="ut-stat-num">
+                            {totalListings > 999
+                                ? <>{(totalListings / 1000).toFixed(1)}<span>k</span></>
+                                : totalListings}
+                        </div>
+                        <div className="ut-stat-label">Active listings</div>
+                    </div>
+                    <div className="ut-stat">
+                        <div className="ut-stat-num">{uniqueCampuses || <span>—</span>}</div>
+                        <div className="ut-stat-label">Campuses active</div>
+                    </div>
+                    <div className="ut-stat">
+                        <div className="ut-stat-num">
+                            {totalValue > 0 ? <>₹<span>{formatValue(totalValue)}</span></> : <span>—</span>}
+                        </div>
+                        <div className="ut-stat-label">Total value listed</div>
+                    </div>
+                </div>
+
+                {/* Section Header */}
+                <div className="ut-section-head">
+                    <div className="ut-section-title">
+                        {activeCategory === 'all' ? 'Recent listings' : `${CATEGORIES.find(c => c.key === activeCategory)?.label}`}
+                    </div>
+                    <span className="ut-see-all" onClick={() => navigate('/marketplace')}>
+                        View all →
+                    </span>
+                </div>
+
+                {/* Loading */}
+                {isLoading && (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+                        <Loading />
+                    </div>
+                )}
+
+                {/* No listings */}
+                {!isLoading && filtered.length === 0 && (
+                    <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '40px 0', fontSize: 14 }}>
+                        No listings available
+                    </div>
+                )}
+
+                {/* Grid */}
+                {!isLoading && filtered.length > 0 && (
+                    <div className="ut-grid">
+                        {filtered
+                            .sort((a, b) => (a.featured ? -1 : b.featured ? 1 : 0))
+                            .slice(0, 6)
+                            .map((listing, index) => (
+                                <ListingCard listing={listing} key={index} />
+                            ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    )
 }
 
 export default LatestListing

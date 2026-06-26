@@ -32,7 +32,7 @@ const CONDITION_LABELS = {
 const StarRating = ({ value, onChange, interactive = false }) => {
     const [hover, setHover] = useState(0);
     return (
-        <div className="flex items-center gap-0.5">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             {[1, 2, 3, 4, 5].map((star) => (
                 <button
                     key={star}
@@ -40,20 +40,40 @@ const StarRating = ({ value, onChange, interactive = false }) => {
                     onClick={interactive ? () => onChange(star) : undefined}
                     onMouseEnter={interactive ? () => setHover(star) : undefined}
                     onMouseLeave={interactive ? () => setHover(0) : undefined}
-                    className={interactive ? "cursor-pointer" : "cursor-default"}
+                    style={{ cursor: interactive ? 'pointer' : 'default', background: 'none', border: 'none', padding: 0 }}
                     disabled={!interactive}
                 >
                     <StarIcon
-                        className={`size-5 transition-colors ${
-                            (hover || value) >= star
-                                ? "text-yellow-400 fill-yellow-400"
-                                : "text-gray-300"
-                        }`}
+                        style={{
+                            width: 18, height: 18, transition: 'color 0.1s',
+                            color: (hover || value) >= star ? '#FBBF24' : '#D1D5DB',
+                            fill: (hover || value) >= star ? '#FBBF24' : 'none',
+                        }}
                     />
                 </button>
             ))}
         </div>
     );
+};
+
+// Shared card style
+const card = {
+    background: 'var(--surface-2)',
+    border: '0.5px solid var(--border)',
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginBottom: 16,
+};
+const cardHeader = {
+    padding: '14px 18px',
+    borderBottom: '0.5px solid var(--border)',
+    fontFamily: "'Space Grotesk', sans-serif",
+    fontWeight: 600,
+    fontSize: 14,
+    color: 'var(--text-primary)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
 };
 
 const ListingDetails = () => {
@@ -131,8 +151,6 @@ const ListingDetails = () => {
         }
     };
 
-
-
     const submitRating = async (e) => {
         e.preventDefault();
         if (!user) return navigate("/login");
@@ -157,79 +175,89 @@ const ListingDetails = () => {
 
     if (!listing) {
         return (
-            <div className="h-screen flex justify-center items-center">
-                <Loader2Icon className="size-7 animate-spin text-indigo-600" />
+            <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--surface-0)' }}>
+                <Loader2Icon style={{ width: 28, height: 28, animation: 'spin 1s linear infinite', color: 'var(--orange)' }} />
             </div>
         );
     }
 
+    const sellerInitials = listing.owner?.name
+        ? listing.owner.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+        : 'UT';
+
     return (
-        <div className="mx-auto min-h-screen px-6 md:px-16 lg:px-24 xl:px-32 pb-16 bg-slate-50">
+        <div style={{ minHeight: '100vh', padding: '0 28px', maxWidth: 1000, margin: '0 auto', background: 'var(--surface-0)', paddingBottom: 64 }}>
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 py-5 text-sm transition"
+                style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    color: 'var(--text-secondary)', background: 'none', border: 'none',
+                    cursor: 'pointer', fontSize: 13, padding: '20px 0',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--orange)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
             >
                 <ArrowLeftIcon className="size-4" /> Back to Listings
             </button>
 
-            <div className="flex items-start max-md:flex-col gap-8">
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, flexWrap: 'wrap' }}>
                 {/* Left: images + details */}
-                <div className="flex-1 max-md:w-full space-y-5">
+                <div style={{ flex: 1, minWidth: 280 }}>
 
                     {/* Title + Price Card */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-xs bg-indigo-100 text-indigo-600 border border-indigo-200 px-2.5 py-0.5 rounded-full font-medium capitalize">
-                                        {listing.category}
-                                    </span>
-                                    <span className="text-xs bg-gray-100 text-gray-600 border border-gray-200 px-2.5 py-0.5 rounded-full font-medium">
-                                        {CONDITION_LABELS[listing.condition] || listing.condition}
-                                    </span>
-                                    {listing.featured && (
-                                        <span className="text-xs bg-gradient-to-r from-pink-500 to-purple-500 text-white px-2.5 py-0.5 rounded-full font-medium">
-                                            Featured
-                                        </span>
-                                    )}
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-800">{listing.title}</h2>
+                    <div style={card}>
+                        <div style={{ padding: '18px 20px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+                                <span className="ut-cat-tag">{listing.category}</span>
+                                <span style={{
+                                    fontSize: 10, fontWeight: 600, padding: '2px 8px',
+                                    background: 'var(--surface-1)', borderRadius: 999,
+                                    color: 'var(--text-secondary)', textTransform: 'capitalize',
+                                }}>
+                                    {CONDITION_LABELS[listing.condition] || listing.condition}
+                                </span>
+                                {listing.featured && (
+                                    <span className="ut-badge-ai" style={{ position: 'static' }}>✦ AI verified</span>
+                                )}
                             </div>
-                            <div className="text-right">
-                                <h3 className="text-3xl font-bold text-indigo-600">
+                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                                <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                                    {listing.title}
+                                </h2>
+                                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 26, fontWeight: 700, color: 'var(--orange)' }}>
                                     {currency}{listing.price?.toLocaleString()}
-                                </h3>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Image Slider */}
                     {images.length > 0 && (
-                        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                            <div className="relative w-full aspect-video overflow-hidden">
+                        <div style={{ ...card, overflow: 'hidden' }}>
+                            <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
                                 <div
-                                    className="flex h-full transition-transform duration-300 ease-in-out"
-                                    style={{ transform: `translateX(-${current * 100}%)` }}
+                                    style={{ display: 'flex', height: '100%', transition: 'transform 0.3s ease-in-out', transform: `translateX(-${current * 100}%)` }}
                                 >
                                     {images.map((img, idx) => (
-                                        <img key={idx} src={img} alt="Listing" className="w-full h-full object-cover shrink-0" />
+                                        <img key={idx} src={img} alt="Listing" style={{ width: '100%', height: '100%', objectFit: 'cover', flexShrink: 0 }} />
                                     ))}
                                 </div>
                                 {images.length > 1 && (
                                     <>
-                                        <button onClick={prevSlide} className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition">
-                                            <ChevronLeftIcon className="w-5 h-5 text-gray-700" />
+                                        <button onClick={prevSlide} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', background: 'rgba(250,250,248,0.9)', border: 'none', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                            <ChevronLeftIcon style={{ width: 18, height: 18, color: 'var(--text-primary)' }} />
                                         </button>
-                                        <button onClick={nextSlide} className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition">
-                                            <ChevronRightIcon className="w-5 h-5 text-gray-700" />
+                                        <button onClick={nextSlide} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'rgba(250,250,248,0.9)', border: 'none', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                            <ChevronRightIcon style={{ width: 18, height: 18, color: 'var(--text-primary)' }} />
                                         </button>
-                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                                        <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6 }}>
                                             {images.map((_, idx) => (
-                                                <button
-                                                    key={idx}
-                                                    onClick={() => setCurrent(idx)}
-                                                    className={`w-2.5 h-2.5 rounded-full transition ${current === idx ? "bg-indigo-600 scale-110" : "bg-gray-300"}`}
-                                                />
+                                                <button key={idx} onClick={() => setCurrent(idx)} style={{
+                                                    width: 8, height: 8, borderRadius: '50%', border: 'none', cursor: 'pointer',
+                                                    background: current === idx ? 'var(--orange)' : 'rgba(255,255,255,0.6)',
+                                                    transform: current === idx ? 'scale(1.2)' : 'scale(1)',
+                                                    transition: 'all 0.2s',
+                                                }} />
                                             ))}
                                         </div>
                                     </>
@@ -239,92 +267,92 @@ const ListingDetails = () => {
                     )}
 
                     {/* Description */}
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                        <div className="p-4 border-b border-gray-100">
-                            <h4 className="font-semibold text-gray-800">Description</h4>
-                        </div>
-                        <div className="p-4 text-sm text-gray-600 leading-relaxed">
+                    <div style={card}>
+                        <div style={cardHeader}>Description</div>
+                        <div style={{ padding: '14px 18px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
                             {listing.description || "No description provided."}
                         </div>
                     </div>
 
                     {/* Item Details */}
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                        <div className="p-4 border-b border-gray-100">
-                            <h4 className="font-semibold text-gray-800">Item Details</h4>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 text-sm">
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                                <p className="text-gray-400 text-xs mb-1">Category</p>
-                                <p className="font-semibold capitalize text-gray-700">{listing.category}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                                <p className="text-gray-400 text-xs mb-1">Condition</p>
-                                <p className="font-semibold capitalize text-gray-700">{CONDITION_LABELS[listing.condition] || listing.condition}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                                <p className="text-gray-400 text-xs mb-1 flex items-center gap-1"><MapPin className="size-3" /> Campus</p>
-                                <p className="font-semibold capitalize text-gray-700 truncate">{listing.owner?.campus || "Undisclosed"}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                                <p className="text-gray-400 text-xs mb-1 flex items-center gap-1"><Calendar className="size-3" /> Listed</p>
-                                <p className="font-semibold text-gray-700">{new Date(listing.createdAt).toLocaleDateString()}</p>
-                            </div>
+                    <div style={card}>
+                        <div style={cardHeader}>Item Details</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, padding: 14 }}>
+                            {[
+                                { label: 'Category', value: listing.category, capitalize: true },
+                                { label: 'Condition', value: CONDITION_LABELS[listing.condition] || listing.condition },
+                                { label: 'Campus', value: listing.owner?.campus || 'Undisclosed', icon: <MapPin style={{ width: 11, height: 11 }} /> },
+                                { label: 'Listed', value: new Date(listing.createdAt).toLocaleDateString(), icon: <Calendar style={{ width: 11, height: 11 }} /> },
+                            ].map(({ label, value, icon, capitalize }) => (
+                                <div key={label} style={{ padding: '10px 14px', background: 'var(--surface-1)', borderRadius: 10 }}>
+                                    <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 3 }}>
+                                        {icon}{label}
+                                    </p>
+                                    <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', textTransform: capitalize ? 'capitalize' : 'none' }}>
+                                        {value}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Seller Ratings Section */}
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                            <h4 className="font-semibold text-gray-800">Seller Ratings</h4>
-                            <div className="flex items-center gap-2">
+                    {/* Seller Ratings */}
+                    <div style={card}>
+                        <div style={cardHeader}>
+                            <span>Seller Ratings</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                 <StarRating value={Math.round(ratingData.averageRating)} />
-                                <span className="text-sm font-semibold text-gray-700">
+                                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>
                                     {ratingData.averageRating > 0 ? ratingData.averageRating.toFixed(1) : "—"}
                                 </span>
-                                <span className="text-xs text-gray-400">({ratingData.totalRatings} review{ratingData.totalRatings !== 1 ? "s" : ""})</span>
+                                <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>({ratingData.totalRatings} review{ratingData.totalRatings !== 1 ? "s" : ""})</span>
                             </div>
                         </div>
 
-                        {/* Recent reviews */}
-                        <div className="divide-y divide-gray-100 max-h-56 overflow-y-auto">
+                        <div style={{ maxHeight: 200, overflowY: 'auto' }}>
                             {ratingData.ratings.length === 0 ? (
-                                <p className="text-sm text-gray-400 p-4 text-center">No reviews yet for this seller.</p>
+                                <p style={{ fontSize: 13, color: 'var(--text-muted)', padding: 16, textAlign: 'center' }}>No reviews yet for this seller.</p>
                             ) : (
                                 ratingData.ratings.slice(0, 5).map((r) => (
-                                    <div key={r.id} className="p-4 flex gap-3">
-                                        <div className="size-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
+                                    <div key={r.id} style={{ padding: '12px 18px', display: 'flex', gap: 12, borderBottom: '0.5px solid var(--border)' }}>
+                                        <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'var(--text-primary)', flexShrink: 0, border: '0.5px solid var(--border)' }}>
                                             {r.reviewer?.name?.charAt(0).toUpperCase() || "U"}
                                         </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="text-sm font-medium text-gray-700">{r.reviewer?.name}</span>
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{r.reviewer?.name}</span>
                                                 <StarRating value={r.rating} />
                                             </div>
-                                            {r.review && <p className="text-xs text-gray-500">{r.review}</p>}
+                                            {r.review && <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{r.review}</p>}
                                         </div>
                                     </div>
                                 ))
                             )}
                         </div>
 
-                        {/* Rate this seller form */}
+                        {/* Rate seller form */}
                         {user && user.id !== listing.ownerId && (
-                            <div className="p-4 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-                                <p className="text-sm font-medium text-gray-700 mb-3">Rate this seller</p>
-                                <form onSubmit={submitRating} className="space-y-3">
+                            <div style={{ padding: '14px 18px', borderTop: '0.5px solid var(--border)', background: 'var(--surface-1)' }}>
+                                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 10 }}>Rate this seller</p>
+                                <form onSubmit={submitRating} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                     <StarRating value={myRating} onChange={setMyRating} interactive />
                                     <textarea
                                         value={myReview}
                                         onChange={(e) => setMyReview(e.target.value)}
                                         placeholder="Share your experience (optional)..."
                                         rows={2}
-                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                        style={{
+                                            width: '100%', border: '0.5px solid var(--border-strong)',
+                                            borderRadius: 8, padding: '8px 12px',
+                                            fontSize: 13, color: 'var(--text-primary)',
+                                            background: 'var(--surface-2)', resize: 'none', outline: 'none',
+                                        }}
                                     />
                                     <button
                                         type="submit"
                                         disabled={submittingRating || myRating === 0}
-                                        className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm px-5 py-2 rounded-lg font-medium transition"
+                                        className="ut-nav-pill primary"
+                                        style={{ alignSelf: 'flex-start', opacity: (submittingRating || myRating === 0) ? 0.5 : 1 }}
                                     >
                                         {submittingRating ? "Submitting..." : "Submit Review"}
                                     </button>
@@ -335,87 +363,102 @@ const ListingDetails = () => {
                 </div>
 
                 {/* Right: seller info + actions */}
-                <div className="bg-white min-w-full md:min-w-[340px] md:max-w-[340px] rounded-2xl border border-gray-200 p-6 shadow-sm max-md:mb-10 self-start sticky top-24">
-                    <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <UserCircleIcon className="size-5 text-indigo-500" /> Seller Profile
-                    </h4>
-
-                    <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-xl">
-                        <div className="size-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-lg shrink-0">
-                            {listing.owner?.image ? (
-                                <img src={listing.owner.image} alt="seller" className="size-12 rounded-full object-cover" />
-                            ) : (
-                                listing.owner?.name?.charAt(0).toUpperCase() || "S"
-                            )}
-                        </div>
-                        <div>
-                            <p className="font-semibold text-gray-800">{listing.owner?.name}</p>
-                            {listing.owner?.campus && (
-                                <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                                    <MapPin className="size-3" /> {listing.owner.campus}
-                                </p>
-                            )}
-                            {ratingData.totalRatings > 0 && (
-                                <div className="flex items-center gap-1.5 mt-1">
-                                    <StarIcon className="size-3.5 fill-yellow-400 text-yellow-400" />
-                                    <span className="text-xs font-semibold text-gray-700">{ratingData.averageRating.toFixed(1)}</span>
-                                    <span className="text-xs text-gray-400">({ratingData.totalRatings})</span>
-                                </div>
-                            )}
-                        </div>
+                <div style={{
+                    ...card,
+                    minWidth: 280, maxWidth: 320, flexShrink: 0,
+                    position: 'sticky', top: 80, alignSelf: 'flex-start',
+                    marginBottom: 0,
+                }}>
+                    <div style={{ padding: '16px 18px', borderBottom: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <UserCircleIcon style={{ width: 16, height: 16, color: 'var(--orange)' }} />
+                        <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>Seller Profile</span>
                     </div>
 
+                    <div style={{ padding: 18 }}>
+                        {/* Seller info */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'var(--surface-1)', borderRadius: 10, marginBottom: 14 }}>
+                            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#F8F7F4', flexShrink: 0, overflow: 'hidden' }}>
+                                {listing.owner?.image ? (
+                                    <img src={listing.owner.image} alt="seller" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : sellerInitials}
+                            </div>
+                            <div>
+                                <p style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)', fontFamily: "'Space Grotesk', sans-serif" }}>{listing.owner?.name}</p>
+                                {listing.owner?.campus && (
+                                    <p style={{ fontSize: 12, color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 3, marginTop: 2 }}>
+                                        <MapPin style={{ width: 11, height: 11 }} /> {listing.owner.campus}
+                                    </p>
+                                )}
+                                {ratingData.totalRatings > 0 && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                                        <StarIcon style={{ width: 12, height: 12, fill: '#FBBF24', color: '#FBBF24' }} />
+                                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{ratingData.averageRating.toFixed(1)}</span>
+                                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>({ratingData.totalRatings})</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
-                    <button
-                        onClick={toggleWishlist}
-                        className={`w-full py-3 rounded-xl border-2 transition text-sm font-semibold flex items-center justify-center gap-2 ${
-                            isWishlisted
-                                ? "border-pink-500 text-pink-600 bg-pink-50"
-                                : "border-gray-200 text-gray-600 hover:border-pink-300 hover:text-pink-500"
-                        }`}
-                    >
-                        <Heart className={`size-5 ${isWishlisted ? "fill-pink-600" : ""}`} />
-                        {isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
-                    </button>
-
-                    {user && user.id !== listing.ownerId && (
+                        {/* Wishlist button */}
                         <button
-                            onClick={() => {
-                                dispatch(setChat({ listing: listing }));
+                            onClick={toggleWishlist}
+                            style={{
+                                width: '100%', padding: '11px', borderRadius: 10,
+                                border: isWishlisted ? '0.5px solid var(--orange)' : '0.5px solid var(--border-strong)',
+                                background: isWishlisted ? '#fdf0e0' : 'transparent',
+                                color: isWishlisted ? 'var(--orange)' : 'var(--text-secondary)',
+                                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                                transition: 'all 0.12s', marginBottom: 10,
                             }}
-                            className="mt-3 w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition text-sm font-semibold flex items-center justify-center shadow-sm"
                         >
-                            Message Seller
+                            <Heart style={{ width: 16, height: 16, fill: isWishlisted ? 'var(--orange)' : 'none' }} />
+                            {isWishlisted ? "Saved to Wishlist" : "Save to Wishlist"}
                         </button>
-                    )}
 
-                    <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 space-y-1">
-                        <p className="flex items-center gap-1.5">
-                            <Package className="size-3.5" />
+                        {/* Message button */}
+                        {user && user.id !== listing.ownerId && (
+                            <button
+                                onClick={() => { dispatch(setChat({ listing: listing })); }}
+                                className="ut-nav-pill primary"
+                                style={{ width: '100%', justifyContent: 'center', padding: '11px', borderRadius: 10, fontSize: 13 }}
+                            >
+                                <i className="ti ti-message-circle" />
+                                Message Seller
+                            </button>
+                        )}
+
+                        {/* Listed date */}
+                        <div style={{ marginTop: 14, paddingTop: 12, borderTop: '0.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--text-muted)' }}>
+                            <Package style={{ width: 12, height: 12 }} />
                             Listed on {new Date(listing.createdAt).toLocaleDateString()}
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* ── Recommendations Section ──────────────────────────────── */}
-            <div className="mt-12">
-                <div className="flex items-center gap-2 mb-6">
-                    <Sparkles className="size-5 text-indigo-500" />
-                    <h3 className="text-xl font-bold text-gray-800">You Might Also Like</h3>
-                    <span className="ml-2 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-medium">AI Powered</span>
+            {/* Recommendations */}
+            <div style={{ marginTop: 48 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                    <Sparkles style={{ width: 18, height: 18, color: 'var(--orange)' }} />
+                    <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>
+                        You Might Also Like
+                    </h3>
+                    <span style={{ fontSize: 10, background: '#fdf0e0', color: 'var(--orange)', padding: '2px 8px', borderRadius: 999, fontWeight: 600 }}>
+                        AI Powered
+                    </span>
                 </div>
 
                 {loadingRecs ? (
-                    <div className="flex justify-center py-10">
-                        <Loader2Icon className="size-7 animate-spin text-indigo-400" />
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+                        <Loader2Icon style={{ width: 24, height: 24, animation: 'spin 1s linear infinite', color: 'var(--text-muted)' }} />
                     </div>
                 ) : recommendations.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-gray-100 py-10 text-center text-gray-400 text-sm">
+                    <div style={{ ...card, padding: '32px', textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
                         No similar listings found right now.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="ut-grid">
                         {recommendations.map((rec) => (
                             <ListingCard key={rec.id} listing={rec} />
                         ))}

@@ -1,80 +1,119 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SearchIcon, ShieldCheckIcon, TagIcon, UsersIcon } from 'lucide-react'
+import { useSelector } from 'react-redux'
+
+// Category background colors for emoji fallback cards
+const CATEGORY_BG = {
+    electronics: '#eef3ff',
+    books: '#f0faf0',
+    furniture: '#fdf5ec',
+    clothing: '#fef0f0',
+    appliances: '#f5f0ff',
+    vehicles: '#e8f5e9',
+    sports: '#fff8e1',
+    other: '#f5f5f5',
+}
+
+const CATEGORY_EMOJI = {
+    electronics: '💻',
+    books: '📚',
+    furniture: '🪑',
+    clothing: '👕',
+    appliances: '🔌',
+    vehicles: '🚲',
+    sports: '⚽',
+    other: '📦',
+}
 
 const Hero = () => {
     const [input, setInput] = React.useState('')
-    const navigate = useNavigate();
+    const navigate = useNavigate()
+    const { listings } = useSelector(state => state.listing)
+
+    // Use first 4 real listings as mini-cards; fall back to empty if not loaded yet
+    const miniCards = listings.slice(0, 4)
 
     const onSubmitHandler = (e) => {
-        e.preventDefault();
-        navigate(`/marketplace?search=${input}`);
+        e.preventDefault()
+        navigate(`/marketplace?search=${input}`)
     }
 
-
-
     return (
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
-            {/* Background decorative blobs */}
-            <div className="absolute -top-20 -right-32 w-96 h-96 bg-indigo-200 rounded-full opacity-30 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-20 w-72 h-72 bg-purple-200 rounded-full opacity-30 blur-3xl pointer-events-none" />
+        <div style={{ background: 'var(--surface-0)' }}>
+            <div className="ut-hero">
+                {/* Left: copy + search */}
+                <div>
+                    <div className="ut-hero-label">🎓 Campus Marketplace</div>
+                    <h1 className="ut-hero-title">
+                        Your campus,<br />your stuff,<br />your prices.
+                    </h1>
+                    <p className="ut-hero-sub">
+                        Buy, sell, and trade textbooks, electronics, furniture, and more — safely within your university community.
+                    </p>
 
-            <div className="relative px-4 md:px-16 lg:px-24 xl:px-40 pt-28 pb-20 flex flex-col items-center text-center text-gray-800">
+                    <form onSubmit={onSubmitHandler}>
+                        <div className="ut-search-wrap">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={e => setInput(e.target.value)}
+                                placeholder="Search listings — MacBook, DSA book, chair…"
+                            />
+                            <button type="submit">
+                                <i className="ti ti-search" aria-hidden="true" />
+                                Search
+                            </button>
+                        </div>
+                    </form>
 
-                {/* Badge */}
-                <div className="flex items-center gap-2 bg-indigo-100 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 border border-indigo-200">
-                    <ShieldCheckIcon className="size-3.5" />
-                    Trusted campus marketplace
-                </div>
-
-                {/* Headline */}
-                <h1 className="text-5xl md:text-7xl font-bold max-w-3xl leading-tight md:leading-tight mb-4">
-                    Buy &amp; Sell
-                    <span className="relative mx-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        Campus
-                    </span>
-                    Finds
-                </h1>
-
-                <p className="max-w-xl text-base md:text-lg text-gray-500 my-6 leading-relaxed">
-                    UniThrift is the exclusive secondhand marketplace for college students.
-                    Score great deals on textbooks, electronics, furniture and more — all within your campus community.
-                </p>
-
-                {/* Search Box */}
-                <form onSubmit={onSubmitHandler} className="w-full flex justify-center mb-10">
-                    <div className="flex items-center w-full max-w-lg border border-gray-300 rounded-xl shadow-md bg-white overflow-hidden focus-within:ring-2 focus-within:ring-indigo-400 transition">
-                        <SearchIcon className="ml-4 text-gray-400 size-5 shrink-0" />
-                        <input
-                            onChange={e => setInput(e.target.value)}
-                            value={input}
-                            type="text"
-                            placeholder="Search for textbooks, laptops, furniture..."
-                            className="pl-3 pr-2 py-3.5 flex-1 outline-none text-sm text-gray-700 bg-transparent"
-                        />
-                        <button
-                            type="submit"
-                            className="m-1.5 bg-indigo-600 hover:bg-indigo-700 transition text-white px-6 py-2.5 rounded-lg text-sm font-semibold"
-                        >
-                            Search
-                        </button>
+                    {/* Category quick-links */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16 }}>
+                        {['Electronics', 'Books', 'Furniture', 'Clothing', 'Vehicles', 'Other'].map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => navigate(`/marketplace?search=${cat}`)}
+                                className="ut-cat"
+                                style={{ fontSize: 12, padding: '5px 12px' }}
+                            >
+                                {cat}
+                            </button>
+                        ))}
                     </div>
-                </form>
-
-                {/* Quick category chips */}
-                <div className="flex flex-wrap justify-center gap-2 mb-10 text-sm">
-                    {['Electronics', 'Books', 'Furniture', 'Clothing', 'Appliances', 'Sports'].map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => navigate(`/marketplace?search=${cat}`)}
-                            className="px-4 py-1.5 rounded-full border border-gray-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 text-gray-600 transition text-xs font-medium shadow-sm"
-                        >
-                            {cat}
-                        </button>
-                    ))}
                 </div>
 
+                {/* Right: real listing mini-cards */}
+                {miniCards.length > 0 && (
+                    <div className="ut-hero-right">
+                        {miniCards.map((listing, i) => {
+                            const cat = listing.category?.toLowerCase()
+                            const bg = CATEGORY_BG[cat] || '#f5f5f5'
+                            const emoji = CATEGORY_EMOJI[cat] || '📦'
+                            const currency = import.meta.env.VITE_CURRENCY || '₹'
 
+                            return (
+                                <div
+                                    key={listing.id || i}
+                                    className="ut-mini-card"
+                                    onClick={() => { navigate(`/listing/${listing.id}`); window.scrollTo(0, 0) }}
+                                >
+                                    <div className="ut-mini-card-img" style={{ background: bg, position: 'relative', overflow: 'hidden' }}>
+                                        {listing.images?.[0]
+                                            ? <img src={listing.images[0]} alt={listing.title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+                                            : emoji
+                                        }
+                                    </div>
+                                    <div className="ut-mini-card-body">
+                                        <div className="ut-mini-card-tag">{listing.category}</div>
+                                        <div className="ut-mini-card-name">{listing.title}</div>
+                                        <div className="ut-mini-card-price">
+                                            {currency}{listing.price?.toLocaleString()}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     )
