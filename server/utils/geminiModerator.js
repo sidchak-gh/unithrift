@@ -29,7 +29,20 @@ const urlToGenerativePart = async (url) => {
  */
 export const moderateListing = async ({ title, description, category, imageUrls = [] }) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "OBJECT",
+          properties: {
+            approved: { type: "BOOLEAN" },
+            reason: { type: "STRING" }
+          },
+          required: ["approved", "reason"]
+        }
+      }
+    });
 
     // Fetch up to 3 images as inline data (Gemini multimodal)
     const imageParts = (
@@ -50,18 +63,12 @@ APPROVAL RULES:
 ✅ Approve if: It is a legitimate second-hand item (books, electronics, furniture, clothing, appliances, vehicles, sports gear, etc.) that a student might sell.
 ❌ Reject if: It contains adult/explicit content, promotes illegal items (drugs, weapons, stolen goods), is a scam, spam, has offensive/hateful content, or is completely irrelevant to a campus marketplace.
 ⚠️ When in doubt, approve — lean towards approval for borderline cases.
-
-Respond ONLY with a valid JSON object in this exact format (no markdown, no extra text):
-{"approved": true, "reason": "One sentence explanation"}
 `;
 
     const parts = [prompt, ...imageParts];
     const result = await model.generateContent(parts);
     const text = result.response.text().trim();
-
-    // Strip markdown code fences if Gemini wraps the response
-    const cleaned = text.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(text);
 
     return {
       approved: Boolean(parsed.approved),
