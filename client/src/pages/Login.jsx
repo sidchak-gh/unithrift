@@ -54,7 +54,7 @@ const Login = () => {
                         color: 'var(--text-primary)', marginBottom: 4,
                     }}>Welcome back</h2>
                     <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-                        Sign in to your campus marketplace account
+                        Sign in to start buying, selling, and chatting.
                     </p>
                 </div>
 

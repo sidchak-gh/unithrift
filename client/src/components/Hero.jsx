@@ -48,7 +48,7 @@ const Hero = () => {
                         Your campus,<br />your stuff,<br />your prices.
                     </h1>
                     <p className="ut-hero-sub">
-                        Buy, sell, and trade textbooks, electronics, furniture, and more — safely within your university community.
+                        Buy and sell used textbooks, hostel essentials, and electronics directly from fellow students.
                     </p>
 
                     <form onSubmit={onSubmitHandler}>

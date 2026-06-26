@@ -8,7 +8,7 @@ const CTA = () => {
             <div className="ut-footer-cta">
                 <div>
                     <h3>Got something to sell?</h3>
-                    <p>List in under 2 minutes. AI screens your listing instantly — no waiting for approval.</p>
+                    <p>Post your room gear, lab coats, or textbooks in 60 seconds and sell directly on campus.</p>
                 </div>
                 <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
                     <button
