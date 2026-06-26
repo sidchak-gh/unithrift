@@ -27,7 +27,7 @@ const LatestListing = () => {
     }, [listings])
 
     const filtered = activeCategory === 'all'
-        ? listings
+        ? [...listings]
         : listings.filter(l => l.category?.toLowerCase() === activeCategory)
 
     const totalListings = listings.length
@@ -109,7 +109,7 @@ const LatestListing = () => {
                 {/* Grid */}
                 {!isLoading && filtered.length > 0 && (
                     <div className="ut-grid">
-                        {filtered
+                        {[...filtered]
                             .sort((a, b) => (a.featured ? -1 : b.featured ? 1 : 0))
                             .slice(0, 6)
                             .map((listing, index) => (

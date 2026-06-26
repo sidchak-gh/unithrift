@@ -114,7 +114,7 @@ const MarketPlace = () => {
                         </div>
                     ) : (
                         <div className="ut-grid">
-                            {filteredListings
+                            {[...filteredListings]
                                 .sort((a, b) => (a.featured ? -1 : b.featured ? 1 : 0))
                                 .map((listing, index) => (
                                     <ListingCard listing={listing} key={index} />
