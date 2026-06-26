@@ -72,7 +72,7 @@ const MarketPlace = () => {
                     )}
                     <button
                         onClick={() => setShowFilterPhone(true)}
-                        className="sm:hidden"
+                        className="sm:!hidden"
                         style={{
                             display: 'flex', alignItems: 'center', gap: 6,
                             background: 'var(--surface-2)', border: '0.5px solid var(--border-strong)',

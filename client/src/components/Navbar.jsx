@@ -100,7 +100,7 @@ const Navbar = () => {
                         {/* Mobile hamburger */}
                         <button
                             onClick={() => setMenuOpen(true)}
-                            className="sm:hidden ut-nav-pill"
+                            className="sm:!hidden ut-nav-pill"
                             aria-label="Open menu"
                         >
                             <i className="ti ti-menu-2" aria-hidden="true" />
@@ -220,7 +220,7 @@ const Navbar = () => {
                         </div>
 
                         {/* Mobile hamburger */}
-                        <button onClick={() => setMenuOpen(true)} className="sm:hidden ut-nav-pill" aria-label="Open menu">
+                        <button onClick={() => setMenuOpen(true)} className="sm:!hidden ut-nav-pill" aria-label="Open menu">
                             <i className="ti ti-menu-2" aria-hidden="true" />
                         </button>
                     </div>
