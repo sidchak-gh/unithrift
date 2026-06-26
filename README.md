@@ -31,7 +31,7 @@
 - Prisma ORM
 - JWT (JSON Web Tokens) & bcrypt
 - Cloudinary & Multer (Image processing)
-- Nodemailer (OTP email delivery)
+- Brevo API (OTP email delivery, with console mock fallback)
 - Google Gemini AI (`@google/generative-ai`) — listing moderation
 - Socket.IO (Real-time chat)
 
@@ -62,7 +62,7 @@ unithrift/
 - Node.js (v18+)
 - PostgreSQL Database URL (Local or via Neon)
 - Cloudinary credentials for media hosting
-- Gmail account + App Password for OTP emails
+- Brevo API Key + Verified Sender Email for OTP delivery (optional; falls back to console logging)
 - Google Gemini API key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ### 1. Repository Setup
@@ -84,8 +84,8 @@ npm install
 # CLOUDINARY_API_KEY="..."
 # CLOUDINARY_API_SECRET="..."
 # ADMIN_EMAIL="admin@yourdomain.com"
-# EMAIL_USER="your_gmail@gmail.com"
-# EMAIL_PASS="your_16_char_gmail_app_password"
+# BREVO_API_KEY="your_brevo_api_key"
+# BREVO_SENDER_EMAIL="your_verified_sender_email"
 # GEMINI_API_KEY="your_gemini_api_key"
 
 # Sync the Prisma database schema
@@ -114,10 +114,12 @@ Your app will be running at `http://localhost:5173`!
 
 ## 🔐 How OTP Verification Works
 
-1. User fills in the registration form and submits
-2. Server sends a **6-digit OTP** to their email (valid for 10 minutes)
-3. User enters the OTP on the verification screen
-4. On success, the account is created and the user is logged in
+1. User fills in the registration form and submits.
+2. Server generates a **6-digit OTP** (valid for 10 minutes).
+   - If `BREVO_API_KEY` and `BREVO_SENDER_EMAIL` are configured, the OTP is sent to the user's email via the Brevo SMTP API.
+   - If they are NOT configured, the server runs in **Mock Email Mode** and prints the OTP code directly to the backend terminal console for easy local testing.
+3. User enters the OTP on the verification screen.
+4. On success, the account is created and the user is logged in.
 
 ## 🤖 How Gemini AI Moderation Works
 
