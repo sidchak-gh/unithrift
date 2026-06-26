@@ -126,7 +126,7 @@ const FilterSidebar = ({ filters, setFilters, showFilterPhone, setShowFilterPhon
     return (
         <>
             {/* Desktop sidebar */}
-            <div className="hidden sm:block sticky top-24 w-56 shrink-0 self-start" style={{
+            <div className="hidden sm:block sticky top-24 w-64 shrink-0 self-start" style={{
                 background: 'var(--surface-2)',
                 border: '0.5px solid var(--border-strong)',
                 borderRadius: 14,
