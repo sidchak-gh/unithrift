@@ -60,19 +60,21 @@ const FilterSidebar = ({ filters, setFilters, showFilterPhone, setShowFilterPhon
                         min={0}
                         max={100000}
                         step={500}
-                        value={filters.maxPrice || 100000}
+                        value={filters.maxPrice === "" ? 100000 : filters.maxPrice}
                         onChange={e => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
                         style={{ flex: 1, accentColor: 'var(--orange)' }}
                     />
                     <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                        ₹{(filters.maxPrice || 100000).toLocaleString()}
+                        {filters.maxPrice === "" || filters.maxPrice >= 100000
+                            ? "Any price"
+                            : `₹${Number(filters.maxPrice).toLocaleString()}`}
                     </span>
                 </div>
                 <input
                     type="number"
                     placeholder="Enter max price"
-                    value={filters.maxPrice || ''}
-                    onChange={e => setFilters({ ...filters, maxPrice: Number(e.target.value) || 100000 })}
+                    value={filters.maxPrice}
+                    onChange={e => setFilters({ ...filters, maxPrice: e.target.value === "" ? "" : Number(e.target.value) })}
                     style={{
                         marginTop: 8, width: '100%',
                         border: '0.5px solid var(--border-strong)',

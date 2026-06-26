@@ -13,7 +13,7 @@ const MarketPlace = () => {
     const [filters, setFilters] = useState({
         categories: [],
         conditions: [],
-        maxPrice: 100000,
+        maxPrice: "",
     });
 
     const { listings } = useSelector((state) => state.listing);
@@ -25,7 +25,7 @@ const MarketPlace = () => {
         }
 
         // Price filter
-        if (filters.maxPrice && listing.price > filters.maxPrice) return false;
+        if (filters.maxPrice !== "" && filters.maxPrice !== undefined && listing.price > Number(filters.maxPrice)) return false;
 
         // Condition filter
         if (filters.conditions && filters.conditions.length > 0) {
