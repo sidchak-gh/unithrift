@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
 import MarketPlace from './pages/MarketPlace'
 import MyListing from './pages/MyListing'
@@ -54,13 +54,13 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<MarketPlace />} />
-        <Route path="/my-listings" element={<MyListing />} />
+        <Route path="/my-listings" element={isSignedIn ? <MyListing /> : <Navigate to="/login" replace />} />
         <Route path="/listing/:listingId" element={<ListingDetails />} />
-        <Route path="/create-listing" element={<ManageListing />} />
-        <Route path="/edit-listing/:id" element={<ManageListing />} />
-        <Route path="/messages" element={<Messages />} />
+        <Route path="/create-listing" element={isSignedIn ? <ManageListing /> : <Navigate to="/login" replace />} />
+        <Route path="/edit-listing/:id" element={isSignedIn ? <ManageListing /> : <Navigate to="/login" replace />} />
+        <Route path="/messages" element={isSignedIn ? <Messages /> : <Navigate to="/login" replace />} />
 
-        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/wishlist" element={isSignedIn ? <Wishlist /> : <Navigate to="/login" replace />} />
         <Route path="/loading/:nextUrl" element={<Loading />} />
         <Route path="/admin" element={<Layout />}>
           <Route index element={<Dashboard />} />
