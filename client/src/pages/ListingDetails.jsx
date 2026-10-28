@@ -417,9 +417,15 @@ const ListingDetails = () => {
                         </button>
 
                         {/* Message button */}
-                        {user && user.id !== listing.ownerId && (
+                        {(!user || user.id !== listing.ownerId) && (
                             <button
-                                onClick={() => { dispatch(setChat({ listing: listing })); }}
+                                onClick={() => {
+                                    if (!user) {
+                                        navigate("/login");
+                                        return;
+                                    }
+                                    dispatch(setChat({ listing: listing }));
+                                }}
                                 className="ut-nav-pill primary"
                                 style={{ width: '100%', justifyContent: 'center', padding: '11px', borderRadius: 10, fontSize: 13 }}
                             >
