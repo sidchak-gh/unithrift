@@ -98,12 +98,14 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await forgotPassword(email);
+            await forgotPassword(email.trim());
             toast.success("Verification code sent to your email!");
             setStep(2);
             setCooldown(60);
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to send reset code");
+            console.error("Forgot password error:", error);
+            const msg = error.response?.data?.message || error.message || "Failed to send reset code";
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -112,12 +114,14 @@ const ForgotPassword = () => {
     const handleResend = async () => {
         if (cooldown > 0) return;
         try {
-            await forgotPassword(email);
+            await forgotPassword(email.trim());
             setCooldown(60);
             setOtp('');
             toast.success("New verification code sent!");
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to resend code");
+            console.error("Resend error:", error);
+            const msg = error.response?.data?.message || error.message || "Failed to resend code";
+            toast.error(msg);
         }
     };
 
@@ -138,11 +142,13 @@ const ForgotPassword = () => {
 
         setLoading(true);
         try {
-            await resetPassword(email, otp, newPassword);
+            await resetPassword(email.trim(), otp.trim(), newPassword);
             toast.success("Password reset successful! Please log in.");
             navigate("/login");
         } catch (error) {
-            toast.error(error.response?.data?.message || "Reset password failed");
+            console.error("Reset error:", error);
+            const msg = error.response?.data?.message || error.message || "Reset password failed";
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -337,3 +343,4 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
+
