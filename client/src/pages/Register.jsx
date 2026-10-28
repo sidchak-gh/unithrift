@@ -3,170 +3,6 @@ import { useAuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-/* ─── Inline styles ──────────────────────────────────────────────────────────── */
-const styles = {
-    page: {
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%)',
-        padding: '24px 16px',
-    },
-    card: {
-        background: '#ffffff',
-        borderRadius: '20px',
-        boxShadow: '0 20px 60px rgba(79,70,229,0.12)',
-        width: '100%',
-        maxWidth: '440px',
-        overflow: 'hidden',
-    },
-    cardHeader: {
-        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-        padding: '28px 32px 24px',
-        textAlign: 'center',
-    },
-    logo: {
-        color: '#fff',
-        fontSize: '22px',
-        fontWeight: '800',
-        margin: '0 0 4px',
-        letterSpacing: '-0.5px',
-    },
-    logoSub: {
-        color: 'rgba(255,255,255,0.75)',
-        fontSize: '12px',
-        margin: 0,
-    },
-    cardBody: {
-        padding: '32px',
-    },
-    title: {
-        fontSize: '22px',
-        fontWeight: '700',
-        color: '#1e293b',
-        margin: '0 0 6px',
-    },
-    subtitle: {
-        fontSize: '14px',
-        color: '#64748b',
-        margin: '0 0 28px',
-        lineHeight: '1.5',
-    },
-    fieldGroup: {
-        marginBottom: '18px',
-    },
-    label: {
-        display: 'block',
-        fontSize: '13px',
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: '6px',
-    },
-    input: {
-        width: '100%',
-        padding: '11px 14px',
-        border: '1.5px solid #e2e8f0',
-        borderRadius: '10px',
-        fontSize: '15px',
-        color: '#1e293b',
-        background: '#f8fafc',
-        outline: 'none',
-        transition: 'border-color 0.2s, box-shadow 0.2s',
-        boxSizing: 'border-box',
-    },
-    submitBtn: {
-        width: '100%',
-        padding: '13px',
-        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '10px',
-        fontSize: '15px',
-        fontWeight: '700',
-        cursor: 'pointer',
-        marginTop: '8px',
-        transition: 'opacity 0.2s, transform 0.1s',
-        letterSpacing: '0.2px',
-    },
-    footer: {
-        textAlign: 'center',
-        fontSize: '13.5px',
-        color: '#64748b',
-        marginTop: '20px',
-    },
-    link: {
-        color: '#4f46e5',
-        fontWeight: '600',
-        textDecoration: 'none',
-    },
-    // OTP step specific
-    otpRow: {
-        display: 'flex',
-        gap: '10px',
-        justifyContent: 'center',
-        marginBottom: '24px',
-    },
-    otpBox: {
-        width: '52px',
-        height: '58px',
-        border: '2px solid #e2e8f0',
-        borderRadius: '12px',
-        fontSize: '24px',
-        fontWeight: '700',
-        textAlign: 'center',
-        color: '#4f46e5',
-        background: '#f8fafc',
-        outline: 'none',
-        transition: 'border-color 0.2s, box-shadow 0.2s',
-        caretColor: 'transparent',
-    },
-    emailBadge: {
-        display: 'inline-block',
-        background: '#eef2ff',
-        color: '#4f46e5',
-        borderRadius: '999px',
-        padding: '4px 14px',
-        fontSize: '13px',
-        fontWeight: '600',
-        marginBottom: '20px',
-    },
-    resendRow: {
-        textAlign: 'center',
-        marginTop: '16px',
-        fontSize: '13.5px',
-        color: '#64748b',
-    },
-    resendBtn: {
-        background: 'none',
-        border: 'none',
-        color: '#4f46e5',
-        fontWeight: '600',
-        cursor: 'pointer',
-        padding: '0',
-        fontSize: '13.5px',
-    },
-    stepIndicator: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
-        marginBottom: '24px',
-    },
-    stepDot: (active) => ({
-        width: '8px',
-        height: '8px',
-        borderRadius: '999px',
-        background: active ? '#4f46e5' : '#e2e8f0',
-        transition: 'background 0.3s',
-    }),
-    stepLine: {
-        width: '32px',
-        height: '2px',
-        background: '#e2e8f0',
-    },
-};
-
 /* ─── OTP Input Row ──────────────────────────────────────────────────────────── */
 const OtpInput = ({ value, onChange }) => {
     const inputs = useRef([]);
@@ -203,7 +39,7 @@ const OtpInput = ({ value, onChange }) => {
     };
 
     return (
-        <div style={styles.otpRow} onPaste={handlePaste}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 24 }} onPaste={handlePaste}>
             {Array.from({ length: 6 }).map((_, idx) => (
                 <input
                     key={idx}
@@ -214,11 +50,18 @@ const OtpInput = ({ value, onChange }) => {
                     value={digits[idx] || ''}
                     onChange={e => handleChange(e, idx)}
                     onKeyDown={e => handleKey(e, idx)}
-                    onFocus={e => e.target.select()}
+                    onFocus={e => { e.target.select(); e.target.style.borderColor = 'var(--orange)'; }}
+                    onBlur={e => e.target.style.borderColor = digits[idx] ? 'var(--orange)' : 'var(--border-strong)'}
                     style={{
-                        ...styles.otpBox,
-                        borderColor: digits[idx] ? '#4f46e5' : '#e2e8f0',
-                        boxShadow: digits[idx] ? '0 0 0 3px rgba(79,70,229,0.12)' : 'none',
+                        width: 48, height: 54,
+                        border: '0.5px solid var(--border-strong)',
+                        borderRadius: 8,
+                        fontSize: 22, fontWeight: 700, textAlign: 'center',
+                        color: 'var(--text-primary)',
+                        background: 'var(--surface-1)',
+                        outline: 'none', caretColor: 'transparent',
+                        transition: 'border-color 0.12s',
+                        fontFamily: "'Inter', sans-serif",
                     }}
                     id={`otp-box-${idx}`}
                     autoComplete="one-time-code"
@@ -230,7 +73,7 @@ const OtpInput = ({ value, onChange }) => {
 
 /* ─── Register Page ──────────────────────────────────────────────────────────── */
 const Register = () => {
-    const [step, setStep] = useState(1); // 1 = form, 2 = OTP
+    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [otp, setOtp] = useState('');
     const [cooldown, setCooldown] = useState(0);
@@ -243,7 +86,6 @@ const Register = () => {
     const { sendOtp, verifyOtp, resendOtp } = useAuthContext();
     const navigate = useNavigate();
 
-    // Cooldown timer for resend
     useEffect(() => {
         if (cooldown <= 0) return;
         const t = setTimeout(() => setCooldown(c => c - 1), 1000);
@@ -260,22 +102,16 @@ const Register = () => {
 
     const handleEmailBlur = () => {
         if (formData.email && !validateEmailDomain(formData.email)) {
-            setEmailError(`Use your college email (${allowedDomains.join(' or ')})`);
+            setEmailError(`Only ${allowedDomains.join(', ')} emails are allowed`);
         } else {
             setEmailError('');
         }
     };
 
-    const focusStyle = {
-        borderColor: '#4f46e5',
-        boxShadow: '0 0 0 3px rgba(79,70,229,0.12)',
-        background: '#fff',
-    };
-
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         if (!validateEmailDomain(formData.email)) {
-            setEmailError(`Use your college email (${allowedDomains.join(' or ')})`);
+            setEmailError(`Only ${allowedDomains.join(', ')} emails are allowed`);
             return;
         }
         setLoading(true);
@@ -319,154 +155,178 @@ const Register = () => {
         }
     };
 
+    const inputStyle = {
+        display: 'block', width: '100%', marginTop: 6,
+        padding: '10px 14px',
+        border: '0.5px solid var(--border-strong)',
+        borderRadius: 8, fontSize: 14,
+        color: 'var(--text-primary)',
+        background: 'var(--surface-1)',
+        outline: 'none', fontFamily: "'Inter', sans-serif",
+        transition: 'border-color 0.12s',
+        boxSizing: 'border-box',
+    };
+
+    const labelStyle = {
+        fontSize: 12, fontWeight: 600,
+        color: 'var(--text-primary)',
+        textTransform: 'uppercase', letterSpacing: '0.08em',
+    };
+
     return (
-        <div style={styles.page}>
-            <div style={styles.card}>
+        <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            minHeight: '70vh', background: 'var(--surface-0)',
+        }}>
+            <div style={{
+                background: 'var(--surface-2)',
+                border: '0.5px solid var(--border-strong)',
+                borderRadius: 16, padding: 36,
+                width: '100%', maxWidth: 420,
+                boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+            }}>
                 {/* Header */}
-                <div style={styles.cardHeader}>
-                    <h1 style={styles.logo}>UniThrift</h1>
-                    <p style={styles.logoSub}>Campus Marketplace</p>
-                </div>
-
-                <div style={styles.cardBody}>
-                    {/* Step indicator */}
-                    <div style={styles.stepIndicator}>
-                        <div style={styles.stepDot(true)} />
-                        <div style={styles.stepLine} />
-                        <div style={styles.stepDot(step === 2)} />
+                <div style={{ marginBottom: 28 }}>
+                    <div className="ut-logo" style={{ fontSize: 20, marginBottom: 6 }}>
+                        Uni<span>Thrift</span>
                     </div>
-
                     {step === 1 ? (
-                        /* ── Step 1: Registration Form ── */
                         <>
-                            <h2 style={styles.title}>Create Account</h2>
-                            <p style={styles.subtitle}>Use your college or Gmail email to get started</p>
-
-                            <form onSubmit={handleRegisterSubmit}>
-                                <div style={styles.fieldGroup}>
-                                    <label style={styles.label}>Full Name</label>
-                                    <input
-                                        name="name"
-                                        type="text"
-                                        required
-                                        placeholder="e.g. Rahul Sharma"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        style={styles.input}
-                                        onFocus={e => Object.assign(e.target.style, focusStyle)}
-                                        onBlur={e => Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' })}
-                                    />
-                                </div>
-                                <div style={styles.fieldGroup}>
-                                    <label style={styles.label}>Campus / College</label>
-                                    <input
-                                        name="campus"
-                                        type="text"
-                                        placeholder="e.g. Graphic Era Hill University"
-                                        value={formData.campus}
-                                        onChange={handleChange}
-                                        style={styles.input}
-                                        onFocus={e => Object.assign(e.target.style, focusStyle)}
-                                        onBlur={e => Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' })}
-                                    />
-                                </div>
-                                <div style={styles.fieldGroup}>
-                                    <label style={styles.label}>Email</label>
-                                    <input
-                                        name="email"
-                                        type="email"
-                                        required
-                                        placeholder="you@gehu.ac.in or you@gmail.com"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        style={{
-                                            ...styles.input,
-                                            borderColor: emailError ? '#ef4444' : '#e2e8f0',
-                                        }}
-                                        onFocus={e => Object.assign(e.target.style, focusStyle)}
-                                        onBlur={e => {
-                                            handleEmailBlur();
-                                            if (!emailError) Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' });
-                                        }}
-                                    />
-                                    {emailError && (
-                                        <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '5px', fontWeight: '500' }}>
-                                            ⚠️ {emailError}
-                                        </p>
-                                    )}
-                                </div>
-                                <div style={styles.fieldGroup}>
-                                    <label style={styles.label}>Password</label>
-                                    <input
-                                        name="password"
-                                        type="password"
-                                        required
-                                        placeholder="Min. 6 characters"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        style={styles.input}
-                                        onFocus={e => Object.assign(e.target.style, focusStyle)}
-                                        onBlur={e => Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' })}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1 }}
-                                    disabled={loading}
-                                    onMouseEnter={e => e.target.style.opacity = '0.9'}
-                                    onMouseLeave={e => e.target.style.opacity = loading ? '0.7' : '1'}
-                                >
-                                    {loading ? 'Sending code…' : 'Send Verification Code →'}
-                                </button>
-                            </form>
-
-                            <div style={styles.footer}>
-                                Already have an account?{' '}
-                                <Link to="/login" style={styles.link}>Log in</Link>
-                            </div>
+                            <h2 style={{
+                                fontFamily: "'Space Grotesk', sans-serif",
+                                fontSize: 22, fontWeight: 700,
+                                color: 'var(--text-primary)', marginBottom: 4,
+                            }}>Create Account</h2>
+                            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                                Use your college or Gmail email to get started
+                            </p>
                         </>
                     ) : (
-                        /* ── Step 2: OTP Verification ── */
                         <>
-                            <h2 style={styles.title}>Verify Your Email</h2>
-                            <p style={styles.subtitle}>Enter the 6-digit code we sent to</p>
-                            <div style={{ textAlign: 'center' }}>
-                                <span style={styles.emailBadge}>{formData.email}</span>
-                            </div>
-
-                            <form onSubmit={handleOtpSubmit}>
-                                <OtpInput value={otp} onChange={setOtp} />
-
-                                <button
-                                    type="submit"
-                                    style={{ ...styles.submitBtn, opacity: loading || otp.length < 6 ? 0.7 : 1 }}
-                                    disabled={loading || otp.length < 6}
-                                >
-                                    {loading ? 'Verifying…' : 'Verify & Create Account'}
-                                </button>
-                            </form>
-
-                            <div style={styles.resendRow}>
-                                Didn't get it?{' '}
-                                <button
-                                    onClick={handleResend}
-                                    style={{ ...styles.resendBtn, opacity: cooldown > 0 ? 0.5 : 1, cursor: cooldown > 0 ? 'not-allowed' : 'pointer' }}
-                                    disabled={cooldown > 0}
-                                >
-                                    {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
-                                </button>
-                            </div>
-
-                            <div style={{ ...styles.footer, marginTop: '12px' }}>
-                                <button
-                                    onClick={() => { setStep(1); setOtp(''); }}
-                                    style={{ ...styles.resendBtn, color: '#64748b', fontWeight: '500' }}
-                                >
-                                    ← Change email
-                                </button>
-                            </div>
+                            <h2 style={{
+                                fontFamily: "'Space Grotesk', sans-serif",
+                                fontSize: 22, fontWeight: 700,
+                                color: 'var(--text-primary)', marginBottom: 4,
+                            }}>Verify Your Email</h2>
+                            <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                                Enter the 6-digit code sent to{' '}
+                                <span style={{ color: 'var(--orange)', fontWeight: 600 }}>{formData.email}</span>
+                            </p>
                         </>
                     )}
+                </div>
+
+                {step === 1 ? (
+                    /* ── Step 1: Registration Form ── */
+                    <form onSubmit={handleRegisterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                            <label style={labelStyle}>Full Name</label>
+                            <input
+                                name="name" type="text" required
+                                placeholder="e.g. Rahul Sharma"
+                                value={formData.name}
+                                onChange={handleChange}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = 'var(--orange)'}
+                                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                            />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Campus / College</label>
+                            <input
+                                name="campus" type="text"
+                                placeholder="e.g. Graphic Era Hill University"
+                                value={formData.campus}
+                                onChange={handleChange}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = 'var(--orange)'}
+                                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                            />
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Email</label>
+                            <input
+                                name="email" type="email" required
+                                placeholder="you@gehu.ac.in or you@gmail.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                style={{ ...inputStyle, borderColor: emailError ? '#ef4444' : 'var(--border-strong)' }}
+                                onFocus={e => e.target.style.borderColor = emailError ? '#ef4444' : 'var(--orange)'}
+                                onBlur={handleEmailBlur}
+                            />
+                            {emailError && (
+                                <p style={{ color: '#ef4444', fontSize: 12, marginTop: 5, fontWeight: 500 }}>
+                                    ⚠️ {emailError}
+                                </p>
+                            )}
+                        </div>
+                        <div>
+                            <label style={labelStyle}>Password</label>
+                            <input
+                                name="password" type="password" required
+                                placeholder="Min. 6 characters"
+                                value={formData.password}
+                                onChange={handleChange}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = 'var(--orange)'}
+                                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="ut-nav-pill primary"
+                            disabled={loading}
+                            style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: 14, borderRadius: 10, marginTop: 4, opacity: loading ? 0.7 : 1 }}
+                        >
+                            {loading ? 'Sending code…' : 'Send Verification Code →'}
+                        </button>
+                    </form>
+                ) : (
+                    /* ── Step 2: OTP Verification ── */
+                    <form onSubmit={handleOtpSubmit}>
+                        <OtpInput value={otp} onChange={setOtp} />
+                        <button
+                            type="submit"
+                            className="ut-nav-pill primary"
+                            disabled={loading || otp.length < 6}
+                            style={{ width: '100%', justifyContent: 'center', padding: '12px', fontSize: 14, borderRadius: 10, opacity: (loading || otp.length < 6) ? 0.7 : 1 }}
+                        >
+                            {loading ? 'Verifying…' : 'Verify & Create Account'}
+                        </button>
+                        <div style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: 'var(--text-muted)' }}>
+                            Didn't get it?{' '}
+                            <button
+                                type="button"
+                                onClick={handleResend}
+                                disabled={cooldown > 0}
+                                style={{
+                                    background: 'none', border: 'none',
+                                    color: 'var(--orange)', fontWeight: 600,
+                                    cursor: cooldown > 0 ? 'not-allowed' : 'pointer',
+                                    opacity: cooldown > 0 ? 0.5 : 1,
+                                    fontSize: 13, padding: 0,
+                                }}
+                            >
+                                {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
+                            </button>
+                        </div>
+                        <div style={{ textAlign: 'center', marginTop: 12 }}>
+                            <button
+                                type="button"
+                                onClick={() => { setStep(1); setOtp(''); }}
+                                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 13 }}
+                            >
+                                ← Change email
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                <div style={{ marginTop: 20, textAlign: 'center', fontSize: 13, color: 'var(--text-muted)' }}>
+                    Already have an account?{' '}
+                    <Link to="/login" style={{ color: 'var(--orange)', fontWeight: 600, textDecoration: 'none' }}>
+                        Log in
+                    </Link>
                 </div>
             </div>
         </div>
