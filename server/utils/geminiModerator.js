@@ -1,6 +1,26 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import prisma from "../configs/prisma.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+/**
+ * Checks if the monthly AI moderation usage has exceeded the configured limit (default: 50).
+ */
+export const hasExceededMonthlyLimit = async () => {
+  const limit = parseInt(process.env.GEMINI_MONTHLY_LIMIT || "50", 10);
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Count listings created/reviewed by AI this month
+  const count = await prisma.listing.count({
+    where: {
+      aiApproved: { not: null },
+      updatedAt: { gte: startOfMonth },
+    },
+  });
+
+  return count >= limit;
+};
 
 /**
  * Fetches an image from a URL and returns it as a Gemini-compatible inline part.
@@ -29,6 +49,13 @@ const urlToGenerativePart = async (url) => {
  */
 export const moderateListing = async ({ title, description, category, imageUrls = [] }) => {
   try {
+    // Check if we hit the monthly 50 reviews limit
+    const limitReached = await hasExceededMonthlyLimit();
+    if (limitReached) {
+      console.warn("⚠️ [GEMINI] Monthly AI moderation quota (50/month) reached. Listing queued for manual admin review.");
+      return null; // Signals controller to set status = 'pending'
+    }
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
       generationConfig: {
