@@ -349,7 +349,7 @@ const Register = () => {
                                         name="name"
                                         type="text"
                                         required
-                                        placeholder="Jane Smith"
+                                        placeholder="e.g. Rahul Sharma"
                                         value={formData.name}
                                         onChange={handleChange}
                                         style={styles.input}
@@ -362,7 +362,7 @@ const Register = () => {
                                     <input
                                         name="campus"
                                         type="text"
-                                        placeholder="e.g. Stanford University"
+                                        placeholder="e.g. Graphic Era Hill University"
                                         value={formData.campus}
                                         onChange={handleChange}
                                         style={styles.input}
@@ -376,7 +376,7 @@ const Register = () => {
                                         name="email"
                                         type="email"
                                         required
-                                        placeholder="you@gehu.ac.in"
+                                        placeholder="you@gehu.ac.in or you@geu.ac.in"
                                         value={formData.email}
                                         onChange={handleChange}
                                         style={{
