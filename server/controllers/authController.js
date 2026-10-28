@@ -21,6 +21,21 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Please fill all required fields" });
     }
 
+    // Validate college email domain
+    const allowedDomains = (process.env.ALLOWED_EMAIL_DOMAINS || "")
+      .split(",")
+      .map((d) => d.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (allowedDomains.length > 0) {
+      const emailDomain = email.split("@")[1]?.toLowerCase();
+      if (!emailDomain || !allowedDomains.includes(emailDomain)) {
+        return res.status(400).json({
+          message: `Only college email addresses are allowed (${allowedDomains.join(", ")})`,
+        });
+      }
+    }
+
     // Check if a fully verified account already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {

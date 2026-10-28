@@ -235,6 +235,10 @@ const Register = () => {
     const [otp, setOtp] = useState('');
     const [cooldown, setCooldown] = useState(0);
     const [formData, setFormData] = useState({ name: '', email: '', password: '', campus: '' });
+    const [emailError, setEmailError] = useState('');
+
+    const allowedDomains = (import.meta.env.VITE_ALLOWED_EMAIL_DOMAINS || '')
+        .split(',').map(d => d.trim().toLowerCase()).filter(Boolean);
 
     const { sendOtp, verifyOtp, resendOtp } = useAuthContext();
     const navigate = useNavigate();
@@ -248,6 +252,20 @@ const Register = () => {
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const validateEmailDomain = (email) => {
+        if (!allowedDomains.length) return true;
+        const domain = email.split('@')[1]?.toLowerCase();
+        return domain && allowedDomains.includes(domain);
+    };
+
+    const handleEmailBlur = () => {
+        if (formData.email && !validateEmailDomain(formData.email)) {
+            setEmailError(`Use your college email (${allowedDomains.join(' or ')})`);
+        } else {
+            setEmailError('');
+        }
+    };
+
     const focusStyle = {
         borderColor: '#4f46e5',
         boxShadow: '0 0 0 3px rgba(79,70,229,0.12)',
@@ -256,6 +274,10 @@ const Register = () => {
 
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
+        if (!validateEmailDomain(formData.email)) {
+            setEmailError(`Use your college email (${allowedDomains.join(' or ')})`);
+            return;
+        }
         setLoading(true);
         try {
             await sendOtp(formData.name, formData.email, formData.password, formData.campus);
@@ -318,7 +340,7 @@ const Register = () => {
                         /* ── Step 1: Registration Form ── */
                         <>
                             <h2 style={styles.title}>Create Account</h2>
-                            <p style={styles.subtitle}>We'll send a verification code to your email</p>
+                            <p style={styles.subtitle}>Use your college email to get started</p>
 
                             <form onSubmit={handleRegisterSubmit}>
                                 <div style={styles.fieldGroup}>
@@ -354,13 +376,24 @@ const Register = () => {
                                         name="email"
                                         type="email"
                                         required
-                                        placeholder="you@university.edu"
+                                        placeholder="you@gehu.ac.in"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        style={styles.input}
+                                        style={{
+                                            ...styles.input,
+                                            borderColor: emailError ? '#ef4444' : '#e2e8f0',
+                                        }}
                                         onFocus={e => Object.assign(e.target.style, focusStyle)}
-                                        onBlur={e => Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' })}
+                                        onBlur={e => {
+                                            handleEmailBlur();
+                                            if (!emailError) Object.assign(e.target.style, { borderColor: '#e2e8f0', boxShadow: 'none', background: '#f8fafc' });
+                                        }}
                                     />
+                                    {emailError && (
+                                        <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '5px', fontWeight: '500' }}>
+                                            ⚠️ {emailError}
+                                        </p>
+                                    )}
                                 </div>
                                 <div style={styles.fieldGroup}>
                                     <label style={styles.label}>Password</label>
