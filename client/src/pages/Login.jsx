@@ -77,9 +77,22 @@ const Login = () => {
                         />
                     </div>
                     <div>
-                        <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                            Password
-                        </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                Password
+                            </label>
+                            <Link
+                                to="/forgot-password"
+                                style={{
+                                    fontSize: 12,
+                                    color: 'var(--orange)',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
                         <div style={{ position: 'relative' }}>
                             <input
                                 type={showPassword ? 'text' : 'password'}

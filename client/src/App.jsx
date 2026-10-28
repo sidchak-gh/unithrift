@@ -10,6 +10,7 @@ import Navbar from './components/Navbar'
 import Wishlist from './pages/Wishlist'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 import { ToastContainer } from 'react-toastify'
 import { Toaster } from 'react-hot-toast'
 import Layout from './pages/admin/Layout'
@@ -52,6 +53,7 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/" element={<Home />} />
         <Route path="/marketplace" element={<MarketPlace />} />
         <Route path="/my-listings" element={isSignedIn ? <MyListing /> : <Navigate to="/login" replace />} />
