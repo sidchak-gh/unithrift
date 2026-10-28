@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Github, LogOut, ArrowRight, PlusCircle } from 'lucide-react'
+import { Mail, LogOut, ArrowRight, PlusCircle } from 'lucide-react'
 import { useAuthContext } from '../context/AuthContext'
 
 const Footer = () => {
@@ -41,7 +41,7 @@ const Footer = () => {
                         </p>
                         <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                             <a
-                                href="mailto:support@unithrift.com"
+                                href="mailto:bishtgodavari@gmail.com"
                                 title="Email Support"
                                 style={{
                                     padding: 8, borderRadius: '50%',
@@ -53,20 +53,6 @@ const Footer = () => {
                                 onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
                             >
                                 <Mail size={15} />
-                            </a>
-                            <a
-                                href="#"
-                                title="GitHub Repository"
-                                style={{
-                                    padding: 8, borderRadius: '50%',
-                                    border: '0.5px solid var(--border-strong)',
-                                    color: 'var(--text-muted)', display: 'flex',
-                                    transition: 'all 0.15s', textDecoration: 'none',
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = 'var(--navy)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'var(--navy)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }}
-                            >
-                                <Github size={15} />
                             </a>
                         </div>
                     </div>
