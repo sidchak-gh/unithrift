@@ -25,7 +25,8 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        if (user && adminEmail && user.email === adminEmail) {
+        const adminEmails = (adminEmail || '').split(',').map(e => e.trim().toLowerCase());
+        if (user && adminEmails.includes(user.email?.toLowerCase())) {
             fetchIsAdmin();
         }
     }, [user, adminEmail]);
