@@ -340,7 +340,7 @@ const Register = () => {
                         /* ── Step 1: Registration Form ── */
                         <>
                             <h2 style={styles.title}>Create Account</h2>
-                            <p style={styles.subtitle}>Use your college email to get started</p>
+                            <p style={styles.subtitle}>Use your college or Gmail email to get started</p>
 
                             <form onSubmit={handleRegisterSubmit}>
                                 <div style={styles.fieldGroup}>
@@ -376,7 +376,7 @@ const Register = () => {
                                         name="email"
                                         type="email"
                                         required
-                                        placeholder="you@gehu.ac.in or you@geu.ac.in"
+                                        placeholder="you@gehu.ac.in or you@gmail.com"
                                         value={formData.email}
                                         onChange={handleChange}
                                         style={{
