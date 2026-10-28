@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Eye, EyeOff } from 'lucide-react';
 
 /* ─── OTP Input Row ──────────────────────────────────────────────────────────── */
 const OtpInput = ({ value, onChange }) => {
@@ -79,6 +80,7 @@ const Register = () => {
     const [cooldown, setCooldown] = useState(0);
     const [formData, setFormData] = useState({ name: '', email: '', password: '', campus: '' });
     const [emailError, setEmailError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const allowedDomains = (import.meta.env.VITE_ALLOWED_EMAIL_DOMAINS || '')
         .split(',').map(d => d.trim().toLowerCase()).filter(Boolean);
@@ -262,15 +264,41 @@ const Register = () => {
                         </div>
                         <div>
                             <label style={labelStyle}>Password</label>
-                            <input
-                                name="password" type="password" required
-                                placeholder="Min. 6 characters"
-                                value={formData.password}
-                                onChange={handleChange}
-                                style={inputStyle}
-                                onFocus={e => e.target.style.borderColor = 'var(--orange)'}
-                                onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
-                            />
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    name="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    placeholder="Min. 6 characters"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    style={{ ...inputStyle, paddingRight: 40 }}
+                                    onFocus={e => e.target.style.borderColor = 'var(--orange)'}
+                                    onBlur={e => e.target.style.borderColor = 'var(--border-strong)'}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: 'absolute',
+                                        right: 12,
+                                        top: '50%',
+                                        transform: 'translateY(-25%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: 0,
+                                        color: 'var(--text-muted)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                    tabIndex={-1}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
                         </div>
                         <button
                             type="submit"
